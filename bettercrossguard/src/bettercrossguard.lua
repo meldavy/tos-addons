@@ -43,7 +43,10 @@ function BetterCrossguard.PlayEffectOnCrossguard(self, argNum)
     if argNum == self.CROSSGUARD_DEBUFF_ID then
         local myHandle = session.GetMyHandle()
         local actor = world.GetActor(myHandle)
+        local targetHandle = session.GetTargetHandle()
+        local target = world.GetActor(targetHandle)
         effect.PlayActorEffect(actor, 'F_warrior_shield002', 'None', 2.0, 15.0)
-        effect.PlayActorEffect(actor, 'F_spread_out001', 'None', 1.0, 1.0)
+        effect.PlayActorEffect(target, 'F_warrior_greatbearformation_cast_spin', 'None', 1.0, 3.0)
+        effect.PlayActorEffect(target, 'F_warrior_greatbearformation_shot_ground', 'None', 1.0, 3.0)
     end
 end

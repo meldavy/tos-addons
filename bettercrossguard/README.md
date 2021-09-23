@@ -6,3 +6,6 @@
 bettercrossguard 애드온은 타겟된 적의 디버프를 확인하는 방식으로, 베기 취약 디버프를 묻히게 되던가 블럭 성공으로 인해 초기화했을시 정확하게 효과와 효과음으로 표기를 합니다.
 
 ![image](https://user-images.githubusercontent.com/12102540/134440230-1e29ad1e-4b3a-4e44-a0d4-104af6da0ad7.png)
+
+
+v1.0.1 -- 효과와 효과음이 잘 안들려서 효과 살짝 추가
