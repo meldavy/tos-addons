@@ -45,8 +45,8 @@ function BetterCrossguard.PlayEffectOnCrossguard(self, argNum)
         local actor = world.GetActor(myHandle)
         local targetHandle = session.GetTargetHandle()
         local target = world.GetActor(targetHandle)
-        effect.PlayActorEffect(actor, 'F_warrior_shield002', 'None', 2.0, 15.0)
-        effect.PlayActorEffect(actor, "F_sys_expcard_great", 'None', 1.0, 4.0)
+        effect.PlayActorEffect(actor, 'F_warrior_shield002', 'Dummy_bufficon', 2.0, 10.0)
         effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
+        imcSound.PlaySoundEvent('sys_tp_box_3');
     end
 end
