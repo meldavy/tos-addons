@@ -67,7 +67,8 @@ end
 -- 본인의 반데릴라 버프가 소모됐을때
 function BANDERILLA_ON_BUFF_REMOVE(frame, msg, argStr, argNum)
     if (argNum == Banderilla.BUFF_ID) then
-        Banderilla:ProcessBanderillaDebuff(frame)
+        -- 0.01초 기달렸다가 시도, pvp에서는 딜레이가 있는듯
+        ReserveScript("BANDERILLA_MESSAGE_HANDLER()", 0.01)
     end
 end
 
@@ -83,6 +84,10 @@ function BANDERILLA_ON_TARGET_BUFF_ADD(frame, msg, argStr, argNum)
     if (argNum == Banderilla.DEBUFF_ID) then
         Banderilla:ProcessBanderillaDebuff(frame)
     end
+end
+
+function BANDERILLA_MESSAGE_HANDLER()
+    Banderilla:ProcessBanderillaDebuff(Banderilla.frame)
 end
 
 -- 반데릴라 애드온 실행

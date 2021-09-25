@@ -13,3 +13,6 @@ An Addon that displays a gauge for Banderilla. Even if the monster or boss with 
 2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `banderilla`
 
 ![image](https://user-images.githubusercontent.com/12102540/134768933-729409ab-7603-4381-8048-988f52bdfe18.png)
+
+
+* v1.0.1 -- fix an issue with PVP by adding 0.01 delay when target is not locked
