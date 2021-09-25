@@ -1,0 +1,17 @@
+<uiframe name="banderilla" x="470" y="30" width="233" height="60" hud="true">
+    <draw drawtitlebar="false"/>
+    <skin frameskin=" "/>
+    <frame layout_gravity="left top" scale_align="center top" keyboardselectframe="false"/>
+    <input maxwidth="1280" moveable="true" hittestframe="true" moveintitlebar="false"/>
+    <layer layerlevel="60"/>
+    <option visible="true" hideable="false" closebutton="false" alwaysVisible="false"/>
+    <sound opensound="window_open" closesound="window_close"/>
+    <script LBtnUpScp="BANDERILLA_LBTN_UP"/>
+    <controls>
+        <picture name="skillgaugeleft" rect="0 0 4 21" margin="38 21 0 0" layout_gravity="left top" image="skillgaugeleft" stretch="true" hittest="false"/>
+        <picture name="skillgaugeright" rect="0 0 4 21" margin="0 21 0 0" layout_gravity="right top" image="skillgaugeright" stretch="true" hittest="false"/>
+        <gauge name="banderillaGauge" rect="0 0 187 50" margin="42 6 0 0" layout_gravity="left top" skin="banderilla_gauge_yellow" drawlastpoint="true" ratewidth="true" text1="{s13}%v{/}" textalign1="center center" textfont1="quickiconfont" textoffset1="0 0" hittest="false"/>
+        <richtext name="infoText" rect="0 0 200 20" margin="44 0 0 0" layout_gravity="left top" caption="{@st42}반데릴라 지속{/}" hittest="false"/>
+        <timer name="debufftimer"  rect="0 0 10 10"/>
+    </controls>
+</uiframe>
