@@ -3,7 +3,7 @@
 
 ### 설치방법:
 1. ipf 파일 다운 후 `Nexon/TreeOfSavior/data` 폴더에 넣기
-2. `Nexon/TreeOfSavior/addon`s 폴더에 `banderilla` 폴더 생성
+2. `Nexon/TreeOfSavior/addons` 폴더에 `banderilla` 폴더 생성
 
 # Banderilla
 An Addon that displays a gauge for Banderilla. Even if the monster or boss with Banderilla debuff is not your target, this addon continues to display the state of the Banderilla debuff.
