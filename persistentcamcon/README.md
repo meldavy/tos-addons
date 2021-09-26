@@ -15,3 +15,6 @@ You can click on the R button (Reset button) to remove the previously saved valu
 ### Installation:
 1. Download the ipf file and place it in `Nexon/TreeOfSavior/data`
 2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `persistentcamcon`
+
+Based on
+https://github.com/suzumeiko/jToSAddon/tree/master/camcon
