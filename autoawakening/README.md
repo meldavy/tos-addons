@@ -21,3 +21,5 @@ Makes your life 1000x easier!
 ### Installation:
 1. Download the ipf file and place it in `Nexon/TreeOfSavior/data`
 2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `autoawakening`
+
+![image](https://user-images.githubusercontent.com/12102540/134794753-58fecc87-dddc-4ec6-a9e7-1f306429e8e2.png)
