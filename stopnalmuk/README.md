@@ -8,5 +8,7 @@
 * 기본으로는 off상태이며 게임을 켰을때 수동으로 on 해줘야해요
 * off 상태에서는 날먹 스펙의 유저를 검거는 해주지만 자동파탈 자동캐선은 안해요
 
+![image](https://user-images.githubusercontent.com/12102540/134996230-7ef39e11-7ae6-4c68-b493-f7b81f3c7b5e.png)
+
 날먹
 "멈쳐"
