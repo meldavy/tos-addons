@@ -1,3 +1,9 @@
+# !TEMPORARILY DOWN!
+파티플 실전에서 정확도도 많이 떨어지고 게임이 팅기는현상까지 있어서 당분간 내리고 다시 손좀 봐보겠습니다
+
+It wasn't reliable enough in party play and even caused the game to crash, so I took it down for maintenance.
+
+
 # 인퍼널 섀도우
 인퍼널 섀도우 사용시 인퍼널 섀도우로 자동 타겟팅 해주는 애드온을 만들고 있습니다.
 
