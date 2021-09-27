@@ -252,12 +252,17 @@ function NALMUK_MEMBER_INFO(cid)
         ui.SysMsg(nalmukmessage)
         -- 자동 캐선 설정
         if (g.autoBarrackSelect == true) then
-            OUT_PARTY() -- 파탈
-            app.GameToBarrack() -- 캐선
+            ui.MsgBox(string.format("날먹러 [%s]님이 검거됐습니다.{nl}탈주하겠습니까?", memberName), 'NALMUK_OUT_PARTY()', 'None')
         end
     end
     -- 혹시라도 버그로 인해 멤버인포 창이 띄워진다면 닫아주자
     ui.CloseFrame('compare')
+end
+
+-- 자동 탈주
+function NALMUK_OUT_PARTY()
+    OUT_PARTY() -- 파탈
+    app.GameToBarrack() -- 캐선
 end
 
 function isJobWhitelisted(info, gender)
