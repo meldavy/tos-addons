@@ -22,6 +22,7 @@ local MARKET_OPTION_GROUP_PROP_LIST = {
         'ADD_DR',         --回避
         'MHP',            --MaxHP
         'MSP',            --MaxSP
+        'BLK',            --블럭
         'RHP',            --HP回復力
         'RSP',            --SP回復力
     },
@@ -237,7 +238,7 @@ end
 
 -- 자동각성 시작 전에 확인메시지 띄움
 function AUTOAWAKENING_CONFIRM_START_AUTO(parent, ctrl)
-    ui.MsgBox("입력된 설정으로 실행 하겠습니까?", ' AUTOAWAKENING_START_AUTO()', 'None')
+    ui.MsgBox("입력된 설정으로 실행 하겠습니까?", 'AUTOAWAKENING_START_AUTO()', 'None')
 end
 
 -- 오토 시작

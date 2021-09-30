@@ -23,3 +23,5 @@ Makes your life 1000x easier!
 2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `autoawakening`
 
 ![image](https://user-images.githubusercontent.com/12102540/134794753-58fecc87-dddc-4ec6-a9e7-1f306429e8e2.png)
+
+* v1.0.1 -- 블럭 옵션 누락된거 추가 / Add Block as a valid selection
