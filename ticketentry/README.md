@@ -6,6 +6,10 @@
 * 기도소 (바실리사 자매)
 * 성소 (길티네 자매)
 
+
+### 설치방법:
+1. ipf 파일 다운 후 `Nexon/TreeOfSavior/data` 폴더에 넣기
+
 # TicketEntry
 Shift+Rightclick on an entry ticket in the skill hotkey bar or inventory to bring up auto-matching UI instead of consuming the ticket.
 
@@ -13,3 +17,6 @@ Shift+Rightclick on an entry ticket in the skill hotkey bar or inventory to brin
 * Mythic Hard dungeon
 * Basilisa Automatching
 * Giltine Automatching
+
+### Installation:
+1. Download the ipf file and place it in `Nexon/TreeOfSavior/data`
