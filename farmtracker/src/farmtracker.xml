@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="farmtracker" x="0" y="0" width="438" height="220">
+    <frame snapclient="true" snapframe="true" layout_gravity="light top" margin="0 0 0 0" keyboardselectframe="false"/>
+    <option visible="true" alwaysVisible="true" closebutton="false" useimageitem="true" autoopen="true" hideable="true"/>
+    <input movable="true" moveintitlebar="false" hittestframe="true"/>
+    <layer layerlevel="60"/>
+    <sound opensound="win_open" closesound="win_close"/>
+    <draw drawnotitlebar="false" drawtitlebar="false" drawframe="true"/>
+    <skin frameskin="chat_window"/>
+    <controls>
+        <richtext name="title" margin="10 10 0 0" caption="/farmtracker" fontname="white_16_ol" hittest="false"/>
+        <slotset name="slotset" margin="10 35 0 0" col="7" row="3" size="57 57" spc="2 2" dropsound="icon_get_down" enabledrag="false" enableselect="false" image="slot" movepop="false" oversound="button_over" skin="invenslot2" hittest="true"/>
+    </controls>
+</uiframe>
