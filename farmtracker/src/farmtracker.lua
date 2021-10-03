@@ -142,7 +142,11 @@ function FarmTracker.DrawSlots(self)
             if (index < max) then
                 local slot = slotset:GetSlotByIndex(index)
                 imcSlot:SetItemInfo(slot, item, 1);
-                SET_SLOT_COUNT_TEXT(slot, tostring(count));
+                local countStr = tostring(count)
+                if (count > 9999) then
+                    countStr = "{s10}" .. countStr
+                end
+                SET_SLOT_COUNT_TEXT(slot, countStr);
             end
             index = index + 1;
         end

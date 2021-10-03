@@ -28,3 +28,5 @@ You can enter the command once more to disable the addon, and the addon will sta
 2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `farmtracker`
 
 ![image](https://user-images.githubusercontent.com/12102540/135739465-2bb83446-6627-4c0e-84c5-cf356c2bd6e1.png)
+
+* v1.0.1 -- Fix `autoopen` bug, reduce font size on stacks greater than 9999

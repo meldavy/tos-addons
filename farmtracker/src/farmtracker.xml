@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uiframe name="farmtracker" x="0" y="0" width="438" height="220">
     <frame snapclient="true" snapframe="true" layout_gravity="light top" margin="0 0 0 0" keyboardselectframe="false"/>
-    <option visible="true" alwaysVisible="true" closebutton="false" useimageitem="true" autoopen="true" hideable="true"/>
+    <option visible="true" alwaysVisible="true" closebutton="false" useimageitem="true" hideable="true"/>
     <input movable="true" moveintitlebar="false" hittestframe="true"/>
     <layer layerlevel="60"/>
     <sound opensound="win_open" closesound="win_close"/>
