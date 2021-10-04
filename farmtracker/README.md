@@ -29,7 +29,8 @@ You can enter the command once more to disable the addon, and the addon will sta
 ### Installation:
 * Search for "Farm Tracker" in the Addon Manager!
 
-![image](https://user-images.githubusercontent.com/12102540/135739465-2bb83446-6627-4c0e-84c5-cf356c2bd6e1.png)
+![image](https://user-images.githubusercontent.com/12102540/135914907-a666f7b3-e858-4669-a2bf-8d5514e4add3.png)
+
 
 * v1.0.1 -- Fix `autoopen` bug, reduce font size on stacks greater than 9999
 * v1.0.2 -- Attempt to fix persistent `autoopen` bug
