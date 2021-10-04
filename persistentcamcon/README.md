@@ -4,6 +4,9 @@
 R 버트 (리셋버튼) 을 누르면 그 맵의 저장된값도 리셋되요
 
 ### 설치방법:
+* 애드온 매니저에서 Persistent Camcon 검색!
+
+### 수동설치:
 1. ipf 파일 다운 후 `Nexon/TreeOfSavior/data` 폴더에 넣기
 2. `Nexon/TreeOfSavior/addons` 폴더에 `persistentcamcon` 폴더 생성
 
@@ -13,8 +16,7 @@ This modification of camcon saves the Z value that was set per map and attempts 
 You can click on the R button (Reset button) to remove the previously saved value.
 
 ### Installation:
-1. Download the ipf file and place it in `Nexon/TreeOfSavior/data`
-2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `persistentcamcon`
+* Search for "Persistent Camcon" in the addon manager!
 
 Based on
 https://github.com/suzumeiko/jToSAddon/tree/master/camcon

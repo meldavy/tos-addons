@@ -10,6 +10,13 @@
 
 ![image](https://user-images.githubusercontent.com/12102540/134996230-7ef39e11-7ae6-4c68-b493-f7b81f3c7b5e.png)
 
+### 설치 방법
+* 뻔한 이유 때문에 애드온 매니저에는 등록이 안된 애드온입니다. 수동설치 해야됩니다.
+
+### 수동설치:
+1. ipf 파일 다운 후 `Nexon/TreeOfSavior/data` 폴더에 넣기
+2. `Nexon/TreeOfSavior/addons` 폴더에 `stopnalmuk` 폴더 생성
+
 날먹
 "멈쳐"
 

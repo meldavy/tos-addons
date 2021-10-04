@@ -8,6 +8,9 @@
 
 
 ### 설치방법:
+* 애드온 매니저에서 Ticket Entry 검색!
+
+### 수동설치:
 1. ipf 파일 다운 후 `Nexon/TreeOfSavior/data` 폴더에 넣기
 
 # TicketEntry
@@ -19,4 +22,4 @@ Shift+Rightclick on an entry ticket in the skill hotkey bar or inventory to brin
 * Giltine Automatching
 
 ### Installation:
-1. Download the ipf file and place it in `Nexon/TreeOfSavior/data`
+* Search for "Ticket Entry" in the addon manager!

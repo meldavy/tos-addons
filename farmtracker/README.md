@@ -10,6 +10,9 @@
 하지만 활성화가 한번도 안된 맵으로 이동시 애드온은 숨겨집니다. 활성화 된 맵에서 위 명령어를 한번 더 입력시 다음 활성화까지 그 맵은 비활성화 처리가 됩니다
 
 ### 설치방법:
+* 애드온 매니저에서 Farm Tracker 검색!
+
+### 수동설치:
 1. ipf 파일 다운 후 `Nexon/TreeOfSavior/data` 폴더에 넣기
 2. `Nexon/TreeOfSavior/addons` 폴더에 `farmtracker` 폴더 생성
 
@@ -24,8 +27,7 @@ Once enabled, the addon stays enabled for that map, meaning that the next time y
 You can enter the command once more to disable the addon, and the addon will stay disabled for that map until enabled again.
 
 ### Installation:
-1. Download the ipf file and place it in `Nexon/TreeOfSavior/data`
-2. Go to `Nexon/TreeOfSavior/addons` and create a new folder named `farmtracker`
+* Search for "Farm Tracker" in the Addon Manager!
 
 ![image](https://user-images.githubusercontent.com/12102540/135739465-2bb83446-6627-4c0e-84c5-cf356c2bd6e1.png)
 
