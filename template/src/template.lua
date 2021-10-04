@@ -42,6 +42,9 @@ function TEMPLATE_ON_FRAME_INIT(frame)
     frame:EnableHitTest(1);
     frame:SetEventScript(ui.LBUTTONUP, "TEMPLATE_END_DRAG");
 
+    -- draw the frame
+    frame:SetSkinName('chat_window');
+
     -- set default position of frame
     frame:Move(Template.Settings.Position.X, Template.Settings.Position.Y);
     frame:SetOffset(Template.Settings.Position.X, Template.Settings.Position.Y);
