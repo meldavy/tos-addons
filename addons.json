@@ -1,0 +1,83 @@
+[
+    {
+        "name": "AutoAwakening",
+        "file": "autoawakening",
+        "extension": "ipf",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "initial",
+        "unicode": "📖",
+        "description": "Automate gear awakening",
+        "tags": [
+            "automation",
+            "ui",
+            "awakening"
+        ]
+    },
+    {
+        "name": "Banderilla",
+        "file": "banderilla",
+        "extension": "ipf",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "initial",
+        "unicode": "📖",
+        "description": "Keeps track of Banderilla debuff duration",
+        "tags": [
+            "banderilla",
+            "ui",
+            "matador",
+            "fencer"
+        ]
+    },
+    {
+        "name": "Better Crossguard",
+        "file": "bettercrossguard",
+        "extension": "ipf",
+        "fileVersion": "v1.0.4",
+        "releaseTag": "initial",
+        "unicode": "📖",
+        "description": "Makes Crossguard effect more visible",
+        "tags": [
+            "crossguard",
+            "highlander"
+        ]
+    },
+    {
+        "name": "Farm Tracker",
+        "file": "farmtracker",
+        "extension": "ipf",
+        "fileVersion": "v1.0.2",
+        "releaseTag": "initial",
+        "unicode": "📖",
+        "description": "Keep track of drops that you acquire while farming",
+        "tags": [
+            "farming",
+            "ui"
+        ]
+    },
+    {
+        "name": "Persistent Camcon",
+        "file": "persistentcamcon",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "initial",
+        "unicode": "📖",
+        "description": "Camcon but saves Zoom value per each map",
+        "tags": [
+            "camcon",
+            "ui",
+            "zoom"
+        ]
+    },
+    {
+        "name": "Ticket Entry",
+        "file": "ticketentry",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "initial",
+        "unicode": "📖",
+        "description": "Display AutoMatching UI by shift+rmb on an entry ticket",
+        "tags": [
+            "ui"
+        ]
+    }
+]
