@@ -21,7 +21,14 @@ FarmTracker.Settings = {
     }
 };
 
+FarmTracker.Default = {
+    Width = 438,
+    Height = 137
+}
+
 local trackedItems = {}
+
+FarmTracker.SilverID = 900011;
 
 function FARMTRACKER_ON_INIT(addon, frame)
     FarmTracker.addon = addon;
@@ -70,19 +77,62 @@ function FARMTRACKER_INIT_FRAME(frame)
     frame:SetEventScript(ui.LBUTTONUP, "FARMTRACKER_END_DRAG");
     frame:Move(FarmTracker.Settings.Position.X, FarmTracker.Settings.Position.Y);
     frame:SetOffset(FarmTracker.Settings.Position.X, FarmTracker.Settings.Position.Y);
+    frame:Resize(FarmTracker.Default.Width, FarmTracker.Default.Height);
 
-    -- XML 로 수정하기 귀찮아서 코드로...
-    frame:Resize(frame:GetWidth(), frame:GetHeight() + 35);
+    local titleText = frame:CreateOrGetControl("richtext", "title", 10, 10, 0, 0);
+    titleText:SetFontName("white_16_ol");
+    titleText:SetText("/farmtracker");
+    titleText:EnableHitTest(0);
+
+    local slotset = frame:CreateOrGetControl("slotset", "slotset", 10, 35, 0, 0);
+    slotset:EnableHitTest(1);
+    AUTO_CAST(slotset)
+    slotset:EnablePop(0)
+    slotset:EnableDrag(0)
+    slotset:EnableDrop(0)
+    slotset:SetSlotSize(57, 57)
+    slotset:SetColRow(7, 1)
+    slotset:SetSpc(2, 2)
+    slotset:SetSkinName('invenslot2')
+    slotset:EnableSelection(0)
+    slotset:CreateSlots()
+
     local btnReset = frame:CreateOrGetControl("button", "reset", 60, 30, ui.RIGHT, ui.BOTTOM, 0, 0, 15, 8);
     AUTO_CAST(btnReset);
     btnReset:SetText("{@sti7}{s16}Reset");
     btnReset:SetEventScript(ui.LBUTTONUP, "FARMTRACKER_RESET");
+
+    local itemPic = frame:CreateOrGetControl("picture", "silver", 30, 30, ui.LEFT, ui.BOTTOM, 15, 0, 0, 8);
+    AUTO_CAST(itemPic)
+    local silverCls = GetClassByType('Item', FarmTracker.SilverID);
+    itemPic:SetImage(silverCls.Icon);
+    itemPic:SetEnableStretch(1)
+
+    local silvercount = frame:CreateOrGetControl("richtext", "silvercount", 200, 30, ui.LEFT, ui.BOTTOM, 50, 0, 0, 12);
+    silvercount:SetFontName("white_16_ol");
+    silvercount:SetText("0");
+    silvercount:EnableHitTest(0);
+
     FARMTRACKER_RESET()
 end
 
 function FARMTRACKER_RESET()
     trackedItems = {}
-    FarmTracker:DrawSlots()
+    local frame = FarmTracker.frame
+
+    -- reset frame size
+    frame:Resize(FarmTracker.Default.Width, FarmTracker.Default.Height);
+
+    -- reset slots and slot count
+    local slotset = frame:GetChild("slotset");
+    AUTO_CAST(slotset)
+    slotset:RemoveAllChild();
+    slotset:SetColRow(7, 1)
+    slotset:CreateSlots()
+
+    -- reset silver text
+    local silvercount = frame:GetChild("silvercount");
+    silvercount:SetText("0");
 end
 
 function FARMTRACKER_SAVE_SETTINGS()
@@ -90,7 +140,7 @@ function FARMTRACKER_SAVE_SETTINGS()
 end
 
 function FARMTRACKER_TOGGLE_FRAME()
-    local frame = ui.GetFrame("farmtracker");
+    local frame = FarmTracker.frame
     local mapId = session.GetMapID();
     local enabled = FarmTracker.Settings.EnabledMaps[tostring(mapId)];
     if (enabled == 1) then
@@ -105,7 +155,7 @@ function FARMTRACKER_TOGGLE_FRAME()
 end
 
 function FARMTRACKER_SEQUENTIAL_PICKITEMON_MSG(frame, msg, arg1, type, class)
-    local trackerFrame = ui.GetFrame('farmtracker')
+    local trackerFrame = FarmTracker.frame
     if (trackerFrame ~= nil and trackerFrame:IsVisible() == 1) then
         if msg == 'INV_ITEM_ADD' then
             if arg1 == 'UNEQUIP' then
@@ -128,27 +178,43 @@ function FARMTRACKER_SEQUENTIAL_PICKITEMON_MSG(frame, msg, arg1, type, class)
     SEQUENTIAL_PICKITEMON_MSG_OLD(frame, msg, arg1, type, class)
 end
 
+function FarmTracker.ExpandRow(self)
+    local frame = FarmTracker.frame
+    local slotset = frame:GetChild("slotset");
+    AUTO_CAST(slotset);
+    slotset:ExpandRow();
+    frame:Resize(frame:GetWidth(), frame:GetHeight() + 59);
+    slotset:CreateSlots();
+end
+
 function FarmTracker.DrawSlots(self)
-    local trackerFrame = ui.GetFrame('farmtracker')
-    if (trackerFrame ~= nil and trackerFrame:IsVisible() == 1) then
-        local slotset = trackerFrame:GetChild("slotset");
+    local frame = FarmTracker.frame
+    if (frame ~= nil and frame:IsVisible() == 1) then
+        local slotset = frame:GetChild("slotset");
         AUTO_CAST(slotset);
-        local col = slotset:GetCol()
-        local row = slotset:GetRow()
-        local max = col * row
         local index = 0;
         for itemID, count in pairs(trackedItems) do
             local item = session.GetInvItemByType(itemID);
-            if (index < max) then
+            if (item == nil or itemID == FarmTracker.SilverID) then
+                -- do nothing
+            else
+                if (index >= slotset:GetSlotCount() - 1) then
+                    FarmTracker:ExpandRow()
+                end
+                local availableCount = slotset:GetSlotCount();
+                if (index >= availableCount) then
+                    slotset:ExpandRow();
+                    frame:Resize(frame:GetWidth(), frame:GetHeight() + 59);
+                end
                 local slot = slotset:GetSlotByIndex(index)
                 imcSlot:SetItemInfo(slot, item, 1);
                 local countStr = tostring(count)
-                if (count > 9999) then
-                    countStr = "{s10}" .. countStr
+                if (count > 99999) then
+                    countStr = "{s12}" .. countStr
                 end
                 SET_SLOT_COUNT_TEXT(slot, countStr);
+                index = index + 1;
             end
-            index = index + 1;
         end
         -- cleanup icons
         for i = index, slotset:GetSlotCount() - 1 do
@@ -156,5 +222,16 @@ function FarmTracker.DrawSlots(self)
             slot:ClearIcon();
             SET_SLOT_COUNT_TEXT(slot, "");
         end
+        -- draw silver
+        local invsilver = 0;
+        if (trackedItems[FarmTracker.SilverID] ~= nil) then
+            invsilver = trackedItems[FarmTracker.SilverID]
+        end
+        local silvercount = frame:GetChild("silvercount");
+        silvercount:SetText(FarmTracker:FormatNumber(invsilver));
     end
+end
+
+function FarmTracker.FormatNumber(self, i)
+    return tostring(i):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
 end

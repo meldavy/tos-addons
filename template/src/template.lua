@@ -20,6 +20,12 @@ Template.Settings = {
     }
 };
 
+Template.Default = {
+    Height = 100,
+    Width = 100,
+    IsVisible = 1
+};
+
 function TEMPLATE_ON_INIT(addon, frame)
     Template.addon = addon;
     Template.frame = frame;
@@ -48,8 +54,10 @@ function TEMPLATE_ON_FRAME_INIT(frame)
     -- set default position of frame
     frame:Move(Template.Settings.Position.X, Template.Settings.Position.Y);
     frame:SetOffset(Template.Settings.Position.X, Template.Settings.Position.Y);
-    frame:Resize(100, 100);
-    frame:ShowWindow(1); -- delete this line for invisible addon
+
+    -- set default size and visibility
+    frame:Resize(Template.Default.Width, Template.Default.Height);
+    frame:ShowWindow(Template.Default.IsVisible);
 end
 
 function TEMPLATE_END_DRAG(frame, ctrl)
