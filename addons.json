@@ -45,8 +45,8 @@
         "name": "Farm Tracker",
         "file": "farmtracker",
         "extension": "ipf",
-        "fileVersion": "v1.0.3",
-        "releaseTag": "farmtracker",
+        "fileVersion": "v1.0.4",
+        "releaseTag": "farmtracker-v1.0.4",
         "unicode": "📖",
         "description": "Keep track of drops that you acquire while farming",
         "tags": [
