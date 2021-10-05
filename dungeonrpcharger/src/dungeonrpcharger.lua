@@ -59,9 +59,7 @@ function DUNGEONRPCHARGER_ON_INIT(addon, frame)
 end
 
 function DUNGEONRPCHARGER_ON_BUFF_ADD(frame, msg, argStr, classID)
-    print("onadd")
     if (classID == DungeonRPCharger.RelicReleaseBuffID) then
-        print(classID)
         frame:RunUpdateScript("DUNGEONRPCHARGER_ON_TICK", 1)
     end
 end
