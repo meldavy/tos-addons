@@ -79,5 +79,17 @@
         "tags": [
             "ui"
         ]
+    },
+    {
+        "name": "Dungeon RP Charger",
+        "file": "dungeonrpcharger",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "dungeonrpcharger",
+        "unicode": "📖",
+        "description": "Auto charge relic inside free dungeon",
+        "tags": [
+            "relic"
+        ]
     }
 ]
