@@ -24,8 +24,8 @@ Template.Default = {
     Height = 100,
     Width = 100,
     IsVisible = 1,
-    Movable = 0,
-    Enabled = 0, -- Hittest
+    Movable = 1,
+    Enabled = 1, -- Hittest
 };
 
 function TEMPLATE_ON_INIT(addon, frame)
