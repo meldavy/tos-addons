@@ -23,7 +23,9 @@ Template.Settings = {
 Template.Default = {
     Height = 100,
     Width = 100,
-    IsVisible = 1
+    IsVisible = 1,
+    Movable = 0,
+    Enabled = 0, -- Hittest
 };
 
 function TEMPLATE_ON_INIT(addon, frame)
@@ -44,8 +46,8 @@ end
 
 function TEMPLATE_ON_FRAME_INIT(frame)
     -- enable frame reposition through drag and move
-    frame:EnableMove(1);
-    frame:EnableHitTest(1);
+    frame:EnableMove(Template.Default.Movable);
+    frame:EnableHitTest(Template.Default.Enabled);
     frame:SetEventScript(ui.LBUTTONUP, "TEMPLATE_END_DRAG");
 
     -- draw the frame
