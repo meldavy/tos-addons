@@ -34,3 +34,4 @@ You can enter the command once more to disable the addon, and the addon will sta
 * v1.0.1 -- Fix `autoopen` bug, reduce font size on stacks greater than 9999
 * v1.0.2 -- Attempt to fix persistent `autoopen` bug
 * v1.0.3 -- Separate silver acquisition view, and make slot count resize based on item acquisition count
+* v1.0.4 -- Enable chat link with RMB. Change how icons are drawn, so that even items no longer in inventory is still displayed and tracked.

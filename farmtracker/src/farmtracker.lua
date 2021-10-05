@@ -194,8 +194,7 @@ function FarmTracker.DrawSlots(self)
         AUTO_CAST(slotset);
         local index = 0;
         for itemID, count in pairs(trackedItems) do
-            local item = session.GetInvItemByType(itemID);
-            if (item == nil or itemID == FarmTracker.SilverID) then
+            if (itemID == FarmTracker.SilverID) then
                 -- do nothing
             else
                 if (index >= slotset:GetSlotCount() - 1) then
@@ -207,11 +206,23 @@ function FarmTracker.DrawSlots(self)
                     frame:Resize(frame:GetWidth(), frame:GetHeight() + 59);
                 end
                 local slot = slotset:GetSlotByIndex(index)
-                imcSlot:SetItemInfo(slot, item, 1);
+                local item = session.GetInvItemByType(itemID);
+                if (item ~= nil) then
+                    imcSlot:SetItemInfo(slot, item, 1);
+                else
+                    slot:ClearIcon();
+                    local itemCls = GetClassByType('Item', itemID);
+                    imcSlot:SetImage(slot, itemCls.Icon);
+                    local icon = slot:GetIcon();
+                    icon:SetTooltipType("wholeitem");
+                    icon:SetTooltipArg("", itemID, 0);
+                end
                 local countStr = tostring(count)
                 if (count > 99999) then
                     countStr = "{s12}" .. countStr
                 end
+                slot:SetEventScript(ui.LBUTTONDOWN, "FARMTRACKER_ON_SLOT_CLICK");
+                slot:SetEventScriptArgNumber(ui.LBUTTONDOWN, itemID);
                 SET_SLOT_COUNT_TEXT(slot, countStr);
                 index = index + 1;
             end
@@ -220,6 +231,7 @@ function FarmTracker.DrawSlots(self)
         for i = index, slotset:GetSlotCount() - 1 do
             local slot = slotset:GetSlotByIndex(i)
             slot:ClearIcon();
+            slot:SetEventScriptArgNumber(ui.LBUTTONDOWN, nil);
             SET_SLOT_COUNT_TEXT(slot, "");
         end
         -- draw silver
@@ -229,6 +241,19 @@ function FarmTracker.DrawSlots(self)
         end
         local silvercount = frame:GetChild("silvercount");
         silvercount:SetText(FarmTracker:FormatNumber(invsilver));
+    end
+end
+
+function FARMTRACKER_ON_SLOT_CLICK(frame, ctrl, argStr, itemID)
+    if (itemID ~= nil) then
+        if keyboard.IsKeyPressed("LCTRL") == 1 then
+            local invitem = session.GetInvItemByType(itemID);
+            if (invitem ~= nil) then
+                LINK_ITEM_TEXT(invitem);
+            else
+                ui.MsgBox("해당 아이템이 인벤토리에 없어 링크가 불가능합니다.")
+            end
+        end
     end
 end
 
