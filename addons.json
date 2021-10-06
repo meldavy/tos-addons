@@ -91,5 +91,30 @@
         "tags": [
             "relic"
         ]
+    },
+    {
+        "name": "Buff Notifier",
+        "file": "buffnotifier",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "buffnotifier-v1.0.0",
+        "unicode": "📖",
+        "description": "Shows added and removed buffs as a popup",
+        "tags": [
+            "ui",
+            "buff"
+        ]
+    },
+    {
+        "name": "Mini Acquisition",
+        "file": "miniacquisition",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "miniacquisition-v1.0.0",
+        "unicode": "📖",
+        "description": "Makes the item acquisition popup smaller and less obtrusive",
+        "tags": [
+            "ui"
+        ]
     }
 ]
