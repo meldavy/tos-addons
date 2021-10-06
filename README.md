@@ -16,3 +16,6 @@ Contact me through discord for anything related to the game or addon!
 ```
 Mel#0101
 ```
+
+애드온 매니저에서 애드온 다운받으세요~! 아래 링크로 애드온 매니저 설치하시면됩니다
+https://github.com/MizukiBelhi/Addon-Manager/releases/tag/v1.0.5
