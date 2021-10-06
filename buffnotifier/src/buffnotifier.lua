@@ -295,10 +295,10 @@ function BuffNotifier.FilterBuff(self, buffCls)
         -- 공개적으로 보여지는 아이콘 외 처리 안함
         return
     end
-    if (BUFF_CHECK_SEPARATELIST(buffID) == true) then
-        -- 중앙 버프 윈도우에 들어가는 버프 표시 안함
-        return
-    end
+    --if (BUFF_CHECK_SEPARATELIST(buffID) == true) then
+    --    -- 중앙 버프 윈도우에 들어가는 버프 표시 안함
+    --    return
+    --end
     local tooltipType = TryGetProp(buffCls, "TooltipType");
     if (tooltipType == "Premium") then
         -- 중앙 버프 윈도우에 들어가는 버프 표시 안함
