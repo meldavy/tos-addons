@@ -96,8 +96,8 @@
         "name": "Buff Notifier",
         "file": "buffnotifier",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "buffnotifier-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "buffnotifier-v1.0.1",
         "unicode": "📖",
         "description": "Shows added and removed buffs as a popup",
         "tags": [
