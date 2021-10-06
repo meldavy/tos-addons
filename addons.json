@@ -6,7 +6,7 @@
         "fileVersion": "v1.0.1",
         "releaseTag": "initial",
         "unicode": "📖",
-        "description": "Automate gear awakening",
+        "description": "Automate gear awakening. 자동 장비 각성",
         "tags": [
             "automation",
             "ui",
@@ -20,7 +20,7 @@
         "fileVersion": "v1.0.1",
         "releaseTag": "initial",
         "unicode": "📖",
-        "description": "Keeps track of Banderilla debuff duration",
+        "description": "Keeps track of Banderilla debuff duration. 반데릴라 디버프 시간 관리",
         "tags": [
             "banderilla",
             "ui",
@@ -29,39 +29,39 @@
         ]
     },
     {
-        "name": "Better Crossguard",
+        "name": "BetterCrossguard",
         "file": "bettercrossguard",
         "extension": "ipf",
         "fileVersion": "v1.0.4",
         "releaseTag": "initial",
         "unicode": "📖",
-        "description": "Makes Crossguard effect more visible",
+        "description": "Makes Crossguard effect more visible. 크로스가드",
         "tags": [
             "crossguard",
             "highlander"
         ]
     },
     {
-        "name": "Farm Tracker",
+        "name": "FarmTracker",
         "file": "farmtracker",
         "extension": "ipf",
         "fileVersion": "v1.0.4",
         "releaseTag": "farmtracker-v1.0.4",
         "unicode": "📖",
-        "description": "Keep track of drops that you acquire while farming",
+        "description": "Keep track of drops that you acquire while farming.",
         "tags": [
             "farming",
             "ui"
         ]
     },
     {
-        "name": "Persistent Camcon",
+        "name": "PersistentCamcon",
         "file": "persistentcamcon",
         "extension": "ipf",
         "fileVersion": "v1.0.0",
         "releaseTag": "initial",
         "unicode": "📖",
-        "description": "Camcon but saves Zoom value per each map",
+        "description": "Camcon but saves Zoom value per each map. Z값 저장되는 캠컨",
         "tags": [
             "camcon",
             "ui",
@@ -69,50 +69,50 @@
         ]
     },
     {
-        "name": "Ticket Entry",
+        "name": "TicketEntry",
         "file": "ticketentry",
         "extension": "ipf",
         "fileVersion": "v1.0.0",
         "releaseTag": "initial",
         "unicode": "📖",
-        "description": "Display AutoMatching UI by shift+rmb on an entry ticket",
+        "description": "Display AutoMatching UI by shift+rmb on an entry ticket. 입장권 쉬프트+우클릭으로 자동매칭UI 보여줌",
         "tags": [
             "ui"
         ]
     },
     {
-        "name": "Dungeon RP Charger",
+        "name": "DungeonRPCharger",
         "file": "dungeonrpcharger",
         "extension": "ipf",
         "fileVersion": "v1.0.1",
         "releaseTag": "dungeonrpcharger-v1.0.1",
         "unicode": "📖",
-        "description": "Auto charge relic inside free dungeon",
+        "description": "Auto charge relic inside free dungeon. 프리던전 성물 자동충전기",
         "tags": [
             "relic"
         ]
     },
     {
-        "name": "Buff Notifier",
+        "name": "BuffNotifier",
         "file": "buffnotifier",
         "extension": "ipf",
         "fileVersion": "v1.0.1",
         "releaseTag": "buffnotifier-v1.0.1",
         "unicode": "📖",
-        "description": "Shows added and removed buffs as a popup",
+        "description": "Shows added and removed buffs as a popup. 버프 생성/제거시 캐릭터 옆에 어느 버프인지 보여줌",
         "tags": [
             "ui",
             "buff"
         ]
     },
     {
-        "name": "Mini Acquisition",
+        "name": "MiniAcquisition",
         "file": "miniacquisition",
         "extension": "ipf",
         "fileVersion": "v1.0.1",
         "releaseTag": "miniacquisition-v1.0.1",
         "unicode": "📖",
-        "description": "Makes the item acquisition popup smaller and less obtrusive",
+        "description": "Makes the item acquisition popup smaller and less obtrusive. 아이템 획득 팝업 조그만하게 만들어줌",
         "tags": [
             "ui"
         ]
