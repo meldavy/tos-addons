@@ -15,17 +15,18 @@ BuffNotifier.SettingsFileLoc = string.format('../addons/%s/settings.json', addon
 
 BuffNotifier.Settings = {
     Position = {
-        X = 150,
+        X = 1050,
         Y = 550
-    }
+    },
+    Visible = 1
 };
 
 BuffNotifier.Default = {
     Height = 40,
     Width = 230,
     IsVisible = 0,
-    Movable = 0,
-    Enabled = 0, -- Hittest
+    Movable = 1,
+    Enabled = 1, -- Hittest
 };
 
 BuffNotifier.addedbuffcount = 0;
@@ -51,6 +52,64 @@ function BUFFNOTIFIER_ON_INIT(addon, frame)
     addon:RegisterMsg('BUFF_REMOVE', 'BUFFNOTIFIER_ON_BUFF_REMOVE');
     -- 맵이동시 첫 3초동안엔 비활성화 합니다. 안그러면 밥차, 기본버프, 등등이 자꾸 떠요
     addon:RegisterMsg('GAME_START_3SEC', 'BUFFNOTIFIER_ON_GAME_START');
+
+    acutil.slashCommand('/buffnotifier', BUFFNOTIFIER_PROCESS_COMMAND)
+
+    BUFFNOTIFIER_INIT_POSITION_HANDLE(frame)
+end
+
+function BUFFNOTIFIER_PROCESS_COMMAND(args)
+    local frame = ui.GetFrame('buffnotifier')
+    local visible = BuffNotifier.Settings.Visible;
+    if (visible == 1) then
+        frame:ShowWindow(0);
+        BuffNotifier.Settings.Visible = 0
+    else
+        frame:ShowWindow(1);
+        BuffNotifier.Settings.Visible = 1
+    end
+    BUFFNOTIFIER_SAVE_SETTINGS();
+end
+
+function BUFFNOTIFIER_INIT_POSITION_HANDLE(frame)
+    -- enable frame reposition through drag and move
+    frame:EnableMove(BuffNotifier.Default.Movable);
+    frame:EnableHitTest(BuffNotifier.Default.Enabled);
+    frame:SetEventScript(ui.LBUTTONUP, "BUFFNOTIFIER_END_DRAG");
+
+    -- show frame
+    local xPos = BuffNotifier.Settings.Position.X
+    local yPos = BuffNotifier.Settings.Position.Y
+    frame:Move(xPos, yPos);
+    frame:SetOffset(xPos, yPos);
+
+    -- draw the frame
+    frame:SetSkinName('None');
+
+    -- set default size and visibility
+    frame:Resize(40, 40);
+
+    -- controls
+    local icon = frame:CreateOrGetControl("picture", "icon", 36, 36, ui.LEFT, ui.BOTTOM, 0, 0, 0, 0);
+    local buffCls = GetClassByType('Buff', 620040);
+    AUTO_CAST(icon)
+    icon:SetImage("icon_" .. buffCls.Icon);
+    icon:SetEnableStretch(1)
+    icon:EnableHitTest(0)
+    icon:SetColorTone("99FFFFFF")
+
+    local tooltipicon = frame:CreateOrGetControl("picture", "tooltipicon", 20, 20, ui.RIGHT, ui.TOP, 0, 0, 0, 0);
+    AUTO_CAST(tooltipicon)
+    tooltipicon:SetImage("button_chat_scale");
+    tooltipicon:SetEnableStretch(1)
+    tooltipicon:EnableHitTest(1)
+
+    -- tooltip
+    tooltipicon:SetTextTooltip("드래그 하여 이동 후 /buffnotifier로 숨김");
+
+    --display
+    frame:SetLayerLevel(10);
+    frame:ShowWindow(BuffNotifier.Settings.Visible);
 end
 
 function BUFFNOTIFIER_ON_GAME_START(frame)
@@ -118,16 +177,15 @@ end
 
 function BUFFNOTIFIER_ON_FRAME_INIT(frame, buffCls, type)
     -- enable frame reposition through drag and move
-    frame:EnableMove(BuffNotifier.Default.Movable);
-    frame:EnableHitTest(BuffNotifier.Default.Enabled);
-    frame:SetEventScript(ui.LBUTTONUP, "BUFFNOTIFIER_END_DRAG");
+    frame:EnableMove(0);
+    frame:EnableHitTest(0);
 
     -- show frame relative to center screen
     local screenWidth = ui.GetSceneWidth();
-    local xPos = (screenWidth // 2) + BuffNotifier.Settings.Position.X
-    local yPos = BuffNotifier.Settings.Position.Y
-    if (type == 1) then
-        yPos = yPos - 40
+    local xPos = BuffNotifier.Settings.Position.X + 45
+    local yPos = BuffNotifier.Settings.Position.Y - 20
+    if (type == 0) then
+        yPos = yPos + 40
     end
     frame:Move(xPos, yPos);
     frame:SetOffset(xPos, yPos);
