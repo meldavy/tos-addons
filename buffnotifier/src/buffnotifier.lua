@@ -31,6 +31,7 @@ BuffNotifier.Default = {
 BuffNotifier.addedbuffcount = 0;
 BuffNotifier.alreadyDisplayedIndex = {};
 BuffNotifier.removedbuffcount = 0;
+BuffNotifier.enabled = false;
 
 function BUFFNOTIFIER_ON_INIT(addon, frame)
     BuffNotifier.addon = addon;
@@ -45,11 +46,21 @@ function BUFFNOTIFIER_ON_INIT(addon, frame)
         end
     end
     BuffNotifier.alreadyDisplayedIndex = {};
+    BuffNotifier.enabled = false;
     addon:RegisterMsg('BUFF_ADD', 'BUFFNOTIFIER_ON_BUFF_ADD');
     addon:RegisterMsg('BUFF_REMOVE', 'BUFFNOTIFIER_ON_BUFF_REMOVE');
+    -- 맵이동시 첫 3초동안엔 비활성화 합니다. 안그러면 밥차, 기본버프, 등등이 자꾸 떠요
+    addon:RegisterMsg('GAME_START_3SEC', 'BUFFNOTIFIER_ON_GAME_START');
+end
+
+function BUFFNOTIFIER_ON_GAME_START(frame)
+    BuffNotifier.enabled = true;
 end
 
 function BUFFNOTIFIER_ON_BUFF_ADD(frame, msg, buffIndex, buffID)
+    if (BuffNotifier.enabled ~= true) then
+        return
+    end
     local buffCls = GetClassByType('Buff', buffID);
 
     -- 표시 할 버프만 보여줌
@@ -74,6 +85,9 @@ function BUFFNOTIFIER_BUFF_ADD_OPEN(frame)
 end
 
 function BUFFNOTIFIER_ON_BUFF_REMOVE(frame, msg, buffIndex, buffID)
+    if (BuffNotifier.enabled ~= true) then
+        return
+    end
     local buffCls = GetClassByType('Buff', buffID);
     -- 표시 할 버프만 보여줌
     if (BuffNotifier:FilterBuff(buffCls) ~= 1) then
