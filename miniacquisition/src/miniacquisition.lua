@@ -75,6 +75,9 @@ function MINIACQUISITION_ON_FRAME_INIT(frame, itemGuid, itemCount)
     local screenHeight = ui.GetSceneHeight() / ui.GetRatioHeight();
     local xPos = screenWidth - Miniacquisition.Settings.Position.X
     local yPos = screenHeight - Miniacquisition.Settings.Position.Y
+    if (IsJoyStickMode() == 1) then
+        yPos = yPos - 90 -- raise ui a bit when joystick mode
+    end
     frame:Move(xPos, yPos);
     frame:SetOffset(xPos, yPos);
 
