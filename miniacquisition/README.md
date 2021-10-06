@@ -6,3 +6,5 @@
 # MiniAcquisition
 You know how the item acquisition popup is really big and obnoxious?
 This addon makes it smaller!
+
+![image](https://user-images.githubusercontent.com/12102540/136194064-267b20b5-6acc-4219-b3e5-e63e991acbdf.png)
