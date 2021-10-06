@@ -71,8 +71,8 @@ function MINIACQUISITION_ON_FRAME_INIT(frame, itemGuid, itemCount)
     frame:SetEventScript(ui.LBUTTONUP, "MINIACQUISITION_END_DRAG");
 
     -- show frame relative to center screen
-    local screenWidth = ui.GetSceneWidth();
-    local screenHeight = ui.GetSceneHeight();
+    local screenWidth = ui.GetSceneWidth() / ui.GetRatioWidth();
+    local screenHeight = ui.GetSceneHeight() / ui.GetRatioHeight();
     local xPos = screenWidth - Miniacquisition.Settings.Position.X
     local yPos = screenHeight - Miniacquisition.Settings.Position.Y
     frame:Move(xPos, yPos);
