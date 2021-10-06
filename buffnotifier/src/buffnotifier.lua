@@ -18,7 +18,19 @@ BuffNotifier.Settings = {
         X = 1050,
         Y = 550
     },
-    Visible = 1
+    Visible = 1,
+    Blacklist = {
+    }
+};
+
+BuffNotifier.DefaultBlacklist = {
+    ["4397"] = "hide",  -- 집방
+    ["40023"] = "hide", -- 주오다
+    ["4417"] = "hide",  -- 카랄 주오다
+    ["3171"] = "hide",  -- 천벌
+    ["3023"] = "hide",  -- 힐
+    ["310"] = "hide",   -- 힐
+    ["3020"] = "hide",  -- 리스토레이션
 };
 
 BuffNotifier.Default = {
@@ -46,6 +58,10 @@ function BUFFNOTIFIER_ON_INIT(addon, frame)
             BuffNotifier.Loaded = true;
         end
     end
+    if (BuffNotifier.Settings.Blacklist == nil) then
+        BuffNotifier.Settings.Blacklist = {}
+    end
+    BUFFNOTIFIER_SAVE_SETTINGS()
     BuffNotifier.alreadyDisplayedIndex = {};
     BuffNotifier.enabled = false;
     addon:RegisterMsg('BUFF_ADD', 'BUFFNOTIFIER_ON_BUFF_ADD');
@@ -53,22 +69,38 @@ function BUFFNOTIFIER_ON_INIT(addon, frame)
     -- 맵이동시 첫 3초동안엔 비활성화 합니다. 안그러면 밥차, 기본버프, 등등이 자꾸 떠요
     addon:RegisterMsg('GAME_START_3SEC', 'BUFFNOTIFIER_ON_GAME_START');
 
+    acutil.slashCommand('/bn', BUFFNOTIFIER_PROCESS_COMMAND)
     acutil.slashCommand('/buffnotifier', BUFFNOTIFIER_PROCESS_COMMAND)
 
     BUFFNOTIFIER_INIT_POSITION_HANDLE(frame)
 end
 
-function BUFFNOTIFIER_PROCESS_COMMAND(args)
-    local frame = ui.GetFrame('buffnotifier')
-    local visible = BuffNotifier.Settings.Visible;
-    if (visible == 1) then
-        frame:ShowWindow(0);
-        BuffNotifier.Settings.Visible = 0
-    else
-        frame:ShowWindow(1);
-        BuffNotifier.Settings.Visible = 1
+function BUFFNOTIFIER_PROCESS_COMMAND(command)
+    local cmd = '';
+    if #command > 0 then
+        cmd = table.remove(command, 1);
     end
-    BUFFNOTIFIER_SAVE_SETTINGS();
+    if cmd == '' then
+        local frame = ui.GetFrame('buffnotifier')
+        local visible = BuffNotifier.Settings.Visible;
+        if (visible == 1) then
+            frame:ShowWindow(0);
+            BuffNotifier.Settings.Visible = 0
+        else
+            frame:ShowWindow(1);
+            BuffNotifier.Settings.Visible = 1
+        end
+        BUFFNOTIFIER_SAVE_SETTINGS();
+    end
+    if cmd == 'hide' then
+        local id = table.remove(command, 1);
+        BuffNotifier.Settings.Blacklist[id] = "hide"
+        BUFFNOTIFIER_SAVE_SETTINGS();
+    elseif cmd == 'unhide' then
+        local id = table.remove(command, 1);
+        BuffNotifier.Settings.Blacklist[id] = nil
+        BUFFNOTIFIER_SAVE_SETTINGS();
+    end
 end
 
 function BUFFNOTIFIER_INIT_POSITION_HANDLE(frame)
@@ -247,6 +279,12 @@ end
 function BuffNotifier.FilterBuff(self, buffCls)
     local buffID = buffCls.ClassID
     -- 표시 할 버프만 보여줌
+    if (BuffNotifier.Settings.Blacklist[tostring(buffID)] ~= nil) then
+        return
+    end
+    if (BuffNotifier.DefaultBlacklist[tostring(buffID)] ~= nil) then
+        return
+    end
     local buffGroup1 = TryGetProp(buffCls, "Group1", "Buff");
     if (buffGroup1 ~= "Buff") then
         -- 버프가 아니면 실행 안함
