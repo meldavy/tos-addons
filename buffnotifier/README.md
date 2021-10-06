@@ -8,3 +8,5 @@
 Addon to display added and removed buffs.
 
 Use the `/buffnotifier` command to hide and show the addon position mover icon.
+
+![image](https://user-images.githubusercontent.com/12102540/136193948-eaf2fc8a-a133-4bc7-889f-6ba1c3a2e833.png)
