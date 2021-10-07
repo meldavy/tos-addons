@@ -15,8 +15,8 @@ Miniacquisition.SettingsFileLoc = string.format('../addons/%s/settings.json', ad
 
 Miniacquisition.Settings = {
     Position = {
-        X = 680,
-        Y = 150
+        X = 420,
+        Y = 120
     }
 };
 
@@ -70,16 +70,13 @@ function MINIACQUISITION_ON_FRAME_INIT(frame, itemGuid, itemCount)
     frame:EnableHitTest(Miniacquisition.Default.Enabled);
     frame:SetEventScript(ui.LBUTTONUP, "MINIACQUISITION_END_DRAG");
 
-    -- show frame relative to center screen
-    local screenWidth = ui.GetSceneWidth() / ui.GetRatioWidth();
-    local screenHeight = ui.GetSceneHeight() / ui.GetRatioHeight();
-    local xPos = screenWidth - Miniacquisition.Settings.Position.X
-    local yPos = screenHeight - Miniacquisition.Settings.Position.Y
+    local xPos = Miniacquisition.Settings.Position.X
+    local yPos = Miniacquisition.Settings.Position.Y
     if (IsJoyStickMode() == 1) then
-        yPos = yPos - 90 -- raise ui a bit when joystick mode
+        yPos = yPos + 90 -- raise ui a bit when joystick mode
     end
-    frame:Move(xPos, yPos);
-    frame:SetOffset(xPos, yPos);
+    frame:SetGravity(ui.RIGHT, ui.BOTTOM);
+    frame:SetMargin(0, 0, xPos, yPos);
 
     -- draw the frame
     frame:SetSkinName('chat_window_2');
