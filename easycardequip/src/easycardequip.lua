@@ -45,6 +45,7 @@ function EASYCARDEQUIP_ON_INIT(addon, frame)
 
     acutil.setupHook(EASYCARDEQUIP_EQUIP_CARDSLOT_INFO_OPEN, 'EQUIP_CARDSLOT_INFO_OPEN')
     acutil.setupHook(EASYCARDEQUIP_MONSTERCARDSLOT_FRAME_OPEN, 'MONSTERCARDSLOT_FRAME_OPEN')
+    acutil.setupHook(EASYCARDEQUIP_MONSTERCARDSLOT_FRAME_CLOSE, 'MONSTERCARDSLOT_FRAME_CLOSE')
 end
 
 -- 카드 ui 실행했을때 인벤토리 아이템 우클릭 훅 활성화
@@ -52,7 +53,14 @@ function EASYCARDEQUIP_MONSTERCARDSLOT_FRAME_OPEN()
     -- 일단 카드 ui 실행
     MONSTERCARDSLOT_FRAME_OPEN_OLD();
     -- 카드 우클릭은 고전식 코드를 사용함. 그래서 따로 우클릭 커스텀 스크립트를 설정해줘야함.
-    INVENTORY_SET_CUSTOM_RBTNDOWN("EASYCARDEQUIP_INV_RBTN")
+    INVENTORY_SET_CUSTOM_RBTNDOWN("EASYCARDEQUIP_INV_RBTN");
+end
+
+-- 창 닫힐때 커스텀 스크립트 제거
+function EASYCARDEQUIP_MONSTERCARDSLOT_FRAME_CLOSE(frame)
+    -- 제거 안해주면 인벤 한번 닫았다 다시 열때까지 우클릭 먹통됨
+    INVENTORY_SET_CUSTOM_RBTNDOWN("None");
+    MONSTERCARDSLOT_FRAME_CLOSE_OLD(frame);
 end
 
 -- 인벤에서 카드 우클릭시
@@ -116,7 +124,7 @@ function EASYCARDEQUIP_ON_EQUIP_MESSAGE_OK()
         moncardFrame:SetUserValue("easycardequip_cardType", type)
         moncardFrame:SetUserValue("easycardequip_cardLv", cardLv)
         -- 장착 시작
-        moncardFrame:RunUpdateScript("EASYCARDEQUIP_EQUIP_SIMILAR_CARDS", 0.5)
+        moncardFrame:RunUpdateScript("EASYCARDEQUIP_EQUIP_SIMILAR_CARDS", 0.2)
     end;
 end
 
@@ -230,7 +238,7 @@ function EASYCARDEQUIP_ON_UNEQUIP_BUTTON_CLICK(frame)
     local moncardFrame = ui.GetFrame("monstercardslot");
     local cardType, cardLv, exp = GETMYCARD_INFO(slotIndex)
     moncardFrame:SetUserValue("easycardequip_unequip_cardType", cardType)
-    moncardFrame:RunUpdateScript("EASYCARDEQUIP_UNEQUIP_SIMILAR_CARDS", 0.5)
+    moncardFrame:RunUpdateScript("EASYCARDEQUIP_UNEQUIP_SIMILAR_CARDS", 0.2)
 end;
 
 -- 동일 카드 장착 해제 시작
