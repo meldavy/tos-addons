@@ -5,3 +5,4 @@
 Equip and unequip similar cards with a single button click. When equipping similar cards, only card with same level (stars) will be equipped.
 
 * v1.0.0 - initial release
+* v1.0.1 - fix bug where inventory item rmb becomes unusable if warehouse is opened

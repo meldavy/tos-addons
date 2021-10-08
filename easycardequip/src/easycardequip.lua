@@ -58,8 +58,14 @@ end
 
 -- 창 닫힐때 커스텀 스크립트 제거
 function EASYCARDEQUIP_MONSTERCARDSLOT_FRAME_CLOSE(frame)
-    -- 제거 안해주면 인벤 한번 닫았다 다시 열때까지 우클릭 먹통됨
-    INVENTORY_SET_CUSTOM_RBTNDOWN("None");
+    local frame = ui.GetFrame("accountwarehouse");
+    if (frame ~= nil and frame:IsVisible() == 1) then
+        -- 만약 창고 사용중에 카드 관리중이였다면 템 우클릭을 창고등록으로 바꿔줌
+        INVENTORY_SET_CUSTOM_RBTNDOWN("ACCOUNT_WAREHOUSE_INV_RBTN")
+    else
+        -- 제거 안해주면 인벤 한번 닫았다 다시 열때까지 우클릭 먹통됨
+        INVENTORY_SET_CUSTOM_RBTNDOWN("None");
+    end
     MONSTERCARDSLOT_FRAME_CLOSE_OLD(frame);
 end
 
