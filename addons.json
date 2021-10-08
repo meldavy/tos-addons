@@ -96,8 +96,8 @@
         "name": "BuffNotifier",
         "file": "buffnotifier",
         "extension": "ipf",
-        "fileVersion": "v1.0.2",
-        "releaseTag": "buffnotifier-v1.0.2",
+        "fileVersion": "v1.0.3",
+        "releaseTag": "buffnotifier-v1.0.3",
         "unicode": "📖",
         "description": "Shows added and removed buffs as a popup. 버프 생성/제거시 캐릭터 옆에 어느 버프인지 보여줌",
         "tags": [
