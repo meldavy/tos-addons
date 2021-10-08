@@ -121,8 +121,8 @@
         "name": "EasyCardEquip",
         "file": "easycardequip",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "easycardequip-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "easycardequip-v1.0.1",
         "unicode": "📖",
         "description": "Equip and Unequip same card type with one click. 같은종류카드 클릭 한번에 전부 탈착/장착",
         "tags": [
