@@ -1,3 +1,5 @@
+--dofile("../data/addon_d/ticketentry/ticketentry.lua");
+
 -- areas defined
 local author = 'meldavy'
 local addonName = 'ticketentry'
@@ -32,6 +34,24 @@ TicketEntry.TICKETS = {
     [689002] = 640,   -- ? 성물하드 입장권
 }
 
+TicketEntry.CHALLENGE_TICKETS = {
+    [11030080] = 1,
+    [490363] = 1,
+    [641953] = 1,
+    [641963] = 1,
+    [10000416] = 1,
+    [641954] = 1,
+    [641955] = 1,
+    [641969] = 1,
+}
+
+TicketEntry.DIVISION_TICKETS = {
+    [11030017] = 1,
+    [11030021] = 1,
+    [11030067] = 1,
+    [10000470] = 1,
+}
+
 function TICKETENTRY_ON_INIT(addon, frame)
     TicketEntry.addon = addon;
     TicketEntry.frame = frame;
@@ -61,6 +81,8 @@ function TICKETENTRY_ICON_USE(object, reAction)
                         -- 성소, 기도소 입장권이면 자동매칭 창 열어줌
                         ReqRaidAutoUIOpen(contentID);
                         return;
+                    else
+
                     end
                 end
             end
@@ -85,9 +107,56 @@ function TICKETENTRY_INVENTORY_RBDC_ITEMUSE(frame, object, argStr, argNum)
             -- 성소, 기도소 입장권이면 자동매칭 창 열어줌
             ReqRaidAutoUIOpen(contentID);
             return;
+        elseif (TicketEntry:IsChallengeTicket(invItem) == 1) then
+            -- 첼초권
+            local frame = ui.GetFrame("ticketentry");
+            frame:SetPos(mouse.GetX() - 105, mouse.GetY() - 35);
+            frame:Resize(220, 70);
+            local chal1 = frame:CreateOrGetControl("button", "chal1", 66, 66, ui.LEFT, ui.TOP, 2, 2, 0, 0);
+            chal1:SetText("Lv 400{nl}1인 입장")
+            chal1:SetEventScript(ui.LBUTTONUP, "TICKET_ENTRY_CHALLENGE_ENTER");
+            chal1:SetEventScriptArgNumber(ui.LBUTTONUP, 644);
+
+            local chal2 = frame:CreateOrGetControl("button", "chal2", 66, 66, ui.LEFT, ui.TOP, 74, 2, 0, 0);
+            chal2:SetText("Lv 440{nl}1인 입장")
+            chal2:SetEventScript(ui.LBUTTONUP, "TICKET_ENTRY_CHALLENGE_ENTER");
+            chal2:SetEventScriptArgNumber(ui.LBUTTONUP, 645);
+
+            local chal3 = frame:CreateOrGetControl("button", "chal3", 66, 66, ui.LEFT, ui.TOP, 146, 2, 0, 0);
+            chal3:SetText("Lv 440{nl}자동 매칭")
+            chal3:SetEventScript(ui.LBUTTONUP, "TICKET_ENTRY_CHALLENGE_ENTER");
+            chal3:SetEventScriptArgNumber(ui.LBUTTONUP, 646);
+
+            frame:ShowWindow(1);
+            return;
+        elseif (TicketEntry:IsDivisionTicket(invItem) == 1) then
+            ReqChallengeAutoUIOpen(647);
+            return;
         end
     end
     INVENTORY_RBDC_ITEMUSE_OLD(frame, object, argStr, argNum)
+end
+
+function ON_TICKET_ENTRY_ON_LOST_FOCUS(frame)
+    frame:ShowWindow(0);
+end
+
+function TICKET_ENTRY_CHALLENGE_ENTER(frame, ctrl, argStr, argNum)
+    frame:ShowWindow(0);
+    local contentID = argNum
+    ReqChallengeAutoUIOpen(contentID);
+end
+
+-- 분열권
+function TicketEntry.IsDivisionTicket(self, invItem)
+    local cls = invItem.type
+    return TicketEntry.DIVISION_TICKETS[cls]
+end
+
+-- 첼초권
+function TicketEntry.IsChallengeTicket(self, invItem)
+    local cls = invItem.type
+    return TicketEntry.CHALLENGE_TICKETS[cls]
 end
 
 -- 입장권

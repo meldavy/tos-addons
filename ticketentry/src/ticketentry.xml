@@ -1,2 +1,10 @@
-<uiframe name="ticketentry" x="0" y="0" width="0" height="0">
+<uiframe name="ticketentry" x="0" y="0" width="210" height="70">
+    <draw drawframe="false" drawtitlebar="false"/>
+    <skin frameskin="pip_gridbox"/>
+    <input moveable="true" moveintitlebar="false"/>
+    <option visible="false" useimageitem="false" closebutton="false"/>
+    <script lostFocusScp="ON_TICKET_ENTRY_ON_LOST_FOCUS"/>
+    <layer layerlevel="120"/>
+    <controls>
+    </controls>
 </uiframe>

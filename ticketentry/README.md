@@ -5,6 +5,8 @@
 * 성물하드
 * 기도소 (바실리사 자매)
 * 성소 (길티네 자매)
+* 첼린지 모드
+* 분열권
 
 
 ### 설치방법:
@@ -20,6 +22,8 @@ Shift+Rightclick on an entry ticket in the skill hotkey bar or inventory to brin
 * Mythic Hard dungeon
 * Basilisa Automatching
 * Giltine Automatching
+* Challenge Mode
+* Challenge division
 
 ### Installation:
 * Search for "Ticket Entry" in the addon manager!
