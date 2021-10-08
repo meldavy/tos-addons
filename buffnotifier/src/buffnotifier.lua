@@ -43,6 +43,7 @@ BuffNotifier.Default = {
 
 BuffNotifier.addedbuffcount = 0;
 BuffNotifier.alreadyDisplayedIndex = {};
+BuffNotifier.currentBuffs = {};
 BuffNotifier.removedbuffcount = 0;
 BuffNotifier.enabled = false;
 
@@ -159,8 +160,9 @@ function BUFFNOTIFIER_ON_BUFF_ADD(frame, msg, buffIndex, buffID)
         return
     end
     local key = "ADD" .. buffID
-    if BuffNotifier.alreadyDisplayedIndex[key] == nil then
+    if BuffNotifier.alreadyDisplayedIndex[key] == nil and BuffNotifier.currentBuffs[buffID] == nil then
         BuffNotifier.alreadyDisplayedIndex[key] = "AlreadyOpen"
+        BuffNotifier.currentBuffs[buffID] = 1
         BuffNotifier.addedbuffcount = BuffNotifier.addedbuffcount + 1;
         local frameName = "BUFFNOTIFIER_ADD_"..BuffNotifier.addedbuffcount;
         ui.DestroyFrame(frameName);
@@ -186,6 +188,7 @@ function BUFFNOTIFIER_ON_BUFF_REMOVE(frame, msg, buffIndex, buffID)
     end
     local key = "REMOVE" .. buffID
     if BuffNotifier.alreadyDisplayedIndex[key] == nil then
+        BuffNotifier.currentBuffs[buffID] = nil
         BuffNotifier.alreadyDisplayedIndex[key] = "AlreadyOpen"
         BuffNotifier.removedbuffcount = BuffNotifier.removedbuffcount + 1;
         local frameName = "BUFFNOTIFIER_REMOVE_"..BuffNotifier.removedbuffcount;
