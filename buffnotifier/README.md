@@ -11,6 +11,9 @@ https://handtos.mochisuke.jp/ktos/ko/database/buffs
 
 반대로, 숨김이 된 버프를 다시 보이게 할려면 `/bn unhide 67` 처럼 `unhide` 명령어를 사용하시면됩니다.
 
+제가 개인적으로 사용하는 설정파일: https://github.com/meldavy/tos-addons/blob/main/buffnotifier/settings.json
+* 다운 후 addons/buffnotifier/settings.json 덮어씌우기
+
 # Buff Notifier
 Addon to display added and removed buffs.
 
@@ -24,7 +27,8 @@ and use the `/bn hide id` command, where `id` is the numerical class ID. For ins
 
 Similar, to unhide, use `/bn unhide id`
 
-
+You can use my blacklist setting: https://github.com/meldavy/tos-addons/blob/main/buffnotifier/settings.json
+* Download and replace addons/buffnotifier/settings.json
 
 ![image](https://user-images.githubusercontent.com/12102540/136193948-eaf2fc8a-a133-4bc7-889f-6ba1c3a2e833.png)
 
