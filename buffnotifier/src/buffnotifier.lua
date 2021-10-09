@@ -146,6 +146,14 @@ function BUFFNOTIFIER_INIT_POSITION_HANDLE(frame)
 end
 
 function BUFFNOTIFIER_ON_GAME_START(frame)
+    local handle = session.GetMyHandle()
+    local buffCount = info.GetBuffCount(handle);
+    for i = 0, buffCount - 1 do
+        local buff = info.GetBuffIndexed(handle, i);
+        if buff ~= nil then
+            BuffNotifier.currentBuffs[buff.buffID] = 1
+        end
+    end
     BuffNotifier.enabled = true;
 end
 
