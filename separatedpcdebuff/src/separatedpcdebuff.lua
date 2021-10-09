@@ -136,7 +136,6 @@ function SEPARATEDPCDEBUFF_BUFF_TOTAL_COUNT_CHECK(frame, msg, buffType, handle, 
     if buffCls == nil or buffCls.ShowIcon == "FALSE" then
         return;
     end
-
     local apply_limit_count_buff = 0;
     if buffCls.ApplyLimitCountBuff == "YES" then
         apply_limit_count_buff = 1;
@@ -211,7 +210,7 @@ function SEPARATEDPCDEBUFF_BUFF_TOTAL_COUNT_CHECK(frame, msg, buffType, handle, 
                     if slot == nil then
                         break;
                     end
-                    separatedpcdebuff_slotset[separatedpcdebuff_slotcount] = slot;
+                    separatedpcdebuff_slotlist[separatedpcdebuff_slotcount] = slot;
                     slot:ShowWindow(0);
                     local icon = CreateIcon(slot);
                     if icon ~= nil then
@@ -258,15 +257,14 @@ function SEPARATEDPCDEBUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui
                     for i = 0, slotcount - 1 do
                         local slot = slotlist[i];
                         local text = captionlist[i];
-                        slot:ShowWindow(0);
-                        slot:ReleaseBlink();
-                        text:SetText("");
+                        CLEAR_BUFF_SLOT(slot, text)
                     end
                 end
             end
         end
         -- for pc debuff
         local slotset = frame:GetChild("casterdebuffslot")
+        AUTO_CAST(slotset)
         if (slotset ~= nil) then
             local slotlist = separatedpcdebuff_slotlist;
             local slotcount = separatedpcdebuff_slotcount;
@@ -275,9 +273,11 @@ function SEPARATEDPCDEBUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui
                 for i = 0, slotcount - 1 do
                     local slot = slotlist[i];
                     local text = captionlist[i];
-                    slot:ShowWindow(0);
-                    slot:ReleaseBlink();
-                    text:SetText("");
+                    if (slot ~= nil) then
+                        CLEAR_BUFF_SLOT(slot, text)
+                    else
+                        break;
+                    end
                 end
             end
         end
@@ -316,7 +316,6 @@ function SEPARATEDPCDEBUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui
             isPCCastBuff = true;
         end
     end
-
     if class.Group1 == 'Debuff' and isPCCastBuff == false then
         slotlist = buff_ui["slotlist"][2];
         slotcount = buff_ui["slotcount"][2];
@@ -575,7 +574,6 @@ function SEPARATEDPCDEBUFF_ARRANGE_BUFF_SLOT(frame, buff_ui)
             break;
         end
     end
-
     local visibleRow_casterdebuff = math.floor(visibleCnt_casterdebuff / col_casterdebuff);
     if visibleRow_casterdebuff > 0 and visibleRow_casterdebuff % col_casterdebuff == 0 then
         visibleRow_casterdebuff = visibleRow_casterdebuff + 1;
