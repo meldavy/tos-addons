@@ -96,8 +96,8 @@
         "name": "BuffNotifier",
         "file": "buffnotifier",
         "extension": "ipf",
-        "fileVersion": "v1.0.3",
-        "releaseTag": "buffnotifier-v1.0.3",
+        "fileVersion": "v1.0.4",
+        "releaseTag": "buffnotifier-v1.0.4",
         "unicode": "📖",
         "description": "Shows added and removed buffs as a popup. 버프 생성/제거시 캐릭터 옆에 어느 버프인지 보여줌",
         "tags": [
@@ -138,6 +138,18 @@
         "releaseTag": "autosandradetail-v1.0.0",
         "unicode": "📖",
         "description": "Automatically reroll Sandra Detailed Magnifier. 미세돋보기 자동으로 돌려줌",
+        "tags": [
+            "ui"
+        ]
+    },
+    {
+        "name": "SeparatedPCDebuff",
+        "file": "separatedpcdebuff",
+        "extension": "ipf",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "separatedpcdebuff-v1.0.1",
+        "unicode": "📖",
+        "description": "Makes your debuff stand out from the rest of the party's debuffs. 본인이 적용한 디버프를 파티원들의 디버프랑 따로 분리시킴",
         "tags": [
             "ui"
         ]
