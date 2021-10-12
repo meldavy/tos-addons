@@ -77,10 +77,10 @@ function Template.SetupHook(func, baseFuncName)
     local addonUpper = string.upper(addonName)
     local replacementName = addonUpper .. "_BASE_" .. baseFuncName
     if (_G[replacementName] == nil) then
+        base[baseFuncName] = _G[baseFuncName];
         _G[replacementName] = _G[baseFuncName];
         _G[baseFuncName] = func
-        base[baseFuncName] = _G[replacementName]
     else
-        base[baseFuncName] = _G[replacementName]
+        _G[baseFuncName] = func
     end
 end
