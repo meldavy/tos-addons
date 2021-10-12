@@ -48,6 +48,9 @@ function NEARBYPLAYERINFO_ON_INIT(addon, frame)
             NearbyPlayerInfo.Loaded = true;
         end
     end
+    if (NearbyPlayerInfo.Settings.ExtraRows == nil) then
+        NearbyPlayerInfo.Settings.ExtraRows = 0
+    end
 
     seenMembers = {}
     playerDetails = {}
