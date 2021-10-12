@@ -10,6 +10,7 @@ _G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {}
 -- get a pointer to the area
 local Template = _G['ADDONS'][author][addonName]
 local acutil = require('acutil')
+local base = {}
 
 Template.SettingsFileLoc = string.format('../addons/%s/settings.json', addonName)
 
@@ -70,4 +71,16 @@ end
 
 function TEMPLATE_SAVE_SETTINGS()
     acutil.saveJSON(Template.SettingsFileLoc, Template.Settings);
+end
+
+function Template.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName];
+        _G[baseFuncName] = func
+        base[baseFuncName] = _G[replacementName]
+    else
+        base[baseFuncName] = _G[replacementName]
+    end
 end
