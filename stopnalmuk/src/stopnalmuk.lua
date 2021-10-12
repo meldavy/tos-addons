@@ -10,6 +10,7 @@ CHAT_SYSTEM("/nm 혹은 /날먹 명령어로 날먹멈춰 애드온 설정 확�
 local g = _G['ADDONS'][author][addonName]
 g.autoBarrackSelect = false
 local acutil = require('acutil')
+local base = {}
 -- 힐러들은 봐주자
 local jobWhitelist = {"프리스트", "카발리스트", "팔라딘"}
 local accWhitelist = {"카랄", "루시"}
@@ -20,9 +21,9 @@ local seen = {}
 local checkself = false -- 디버그용
 local maps = {
     11243  -- 기도소
---     11230,  -- 길티네 (실험용)
---     1001,   -- 클페는 실험용
---     1006    -- 오르샤도 실험용
+    --     11230,  -- 길티네 (실험용)
+    --     1001,   -- 클페는 실험용
+    --     1006    -- 오르샤도 실험용
 }
 
 local debugenableallmaps = false -- 실험용, 모든맵에 날먹감지 활성화
@@ -41,7 +42,7 @@ function STOPNALMUK_ON_INIT(addon, frame)
     -- 맵 로딩시 애드온이 실행됩니다
     addon:RegisterMsg('GAME_START_3SEC', 'CHECK_NALMUK_INFO')
     -- 멤버인포 훅
-    acutil.setupHook(NALMUK_MEMBER_INFO, 'SHOW_PC_COMPARE')
+    g.SetupHook(NALMUK_MEMBER_INFO, 'SHOW_PC_COMPARE')
     acutil.slashCommand('/nm', NALMUK_PROCESS_COMMAND)
     acutil.slashCommand('/날먹', NALMUK_PROCESS_COMMAND)
 end
@@ -103,6 +104,10 @@ end
 
 -- 멤버인포 실행시 실행
 function NALMUK_MEMBER_INFO(cid)
+    g.ProcessMemberInfo(cid)
+end
+
+function g.ProcessMemberInfo(cid)
     local otherpcinfo = session.otherPC.GetByStrCID(cid);
 
     -- 이미 날먹 감지 테스트가 실행됐는지 확인.
@@ -112,7 +117,7 @@ function NALMUK_MEMBER_INFO(cid)
     local seenIndex = in_array(tostring(memberName), seen)
     if (seenIndex == -1) then
         -- 멤버 인포 실행
-        SHOW_PC_COMPARE_OLD(cid)
+        base["SHOW_PC_COMPARE"](cid)
         return
     end
 
@@ -128,30 +133,30 @@ function NALMUK_MEMBER_INFO(cid)
         local equipItem = equiplist:GetEquipItemByIndex(k)
         local tempobj = equipItem:GetObject()
         -- 악세사리 확인. 카랄, 루시 이상이여야함미다. 악세 확인은 그래도 어느정도 용서 가능한 날먹이니 확인 안하는걸로...
---         local check_equip_list_2 = {'RING1', 'RING2', 'NECK'}
---         if (in_array(item.GetEquipSpotName(equipItem.equipSpot), check_equip_list_2) > -1) then
---             if tempobj == nil then
---                 -- 악세 미착용
---                 isnalmuk = true
---                 reason = reason .. "악세사리를 착용하고있지 않습니다. "
---             else
---                 -- 악세 착용중
---                 local obj = GetIES(tempobj)
---                 local accname = obj.Name
---                 local isAccWhitelisted = false
---                 for l = 1, #accWhitelist do
---                     if (accname:find(accWhitelist[l], 1, true)) then
---                         -- 카랄 혹은 루시
---                         isAccWhitelisted = true
---                     end
---                 end
---                 if (not isAccWhitelisted) then
---                     isnalmuk = true
---                     local message = string.format("[%s] 착용중. ", accname)
---                     reason = reason .. message
---                 end
---             end
---         else
+        --         local check_equip_list_2 = {'RING1', 'RING2', 'NECK'}
+        --         if (in_array(item.GetEquipSpotName(equipItem.equipSpot), check_equip_list_2) > -1) then
+        --             if tempobj == nil then
+        --                 -- 악세 미착용
+        --                 isnalmuk = true
+        --                 reason = reason .. "악세사리를 착용하고있지 않습니다. "
+        --             else
+        --                 -- 악세 착용중
+        --                 local obj = GetIES(tempobj)
+        --                 local accname = obj.Name
+        --                 local isAccWhitelisted = false
+        --                 for l = 1, #accWhitelist do
+        --                     if (accname:find(accWhitelist[l], 1, true)) then
+        --                         -- 카랄 혹은 루시
+        --                         isAccWhitelisted = true
+        --                     end
+        --                 end
+        --                 if (not isAccWhitelisted) then
+        --                     isnalmuk = true
+        --                     local message = string.format("[%s] 착용중. ", accname)
+        --                     reason = reason .. message
+        --                 end
+        --             end
+        --         else
         -- 착용중인 아크 확인
         if item.GetEquipSpotName(equipItem.equipSpot) == 'ARK' then
             if tempobj == nil then
@@ -177,7 +182,7 @@ function NALMUK_MEMBER_INFO(cid)
                     end
                 end
             end
-        -- 착용중인 성물 확인
+            -- 착용중인 성물 확인
         elseif item.GetEquipSpotName(equipItem.equipSpot) == 'RELIC' then
             if tempobj == nil then
                 -- 성물 미착용
@@ -205,17 +210,17 @@ function NALMUK_MEMBER_INFO(cid)
                             isnalmuk = true
                             reason = reason .. "마젠타젬을 착용하고있지 않습니다. "
                         elseif(_type == 1 and gem_id ~= 0) then
-                           -- _type == 1은 마젠타젬을 뜻합니다. (시안은0, 블랙은2) gem ~= 0 은 착용 상태를 뜻합니다.
-                           -- 마젠타젬 착용중일시 마젠타젬 레벨 확인
-                           local gemname = tostring(GET_RELIC_GEM_NAME_WITH_FONT(gem_cls))
-                           -- 면류관 레벨이 4 미만이면 뉴비라 가정하고 봐주자. 하지만 면류관렙이 4 이상이지만
-                           -- 마젠타 젬 레벨이 2이하면 이새끼는 무조건 날먹입니다
-                           local gemlv = equipItem:GetEquipGemLv(_type)
-                           if (reliclv > 4 and gemlv < gemCeiling) then
-                               isnalmuk = true
-                               local message = string.format("[%s] 레벨이 [%d]입니다. ", gemname, gemlv)
-                               reason = reason .. message
-                           end
+                            -- _type == 1은 마젠타젬을 뜻합니다. (시안은0, 블랙은2) gem ~= 0 은 착용 상태를 뜻합니다.
+                            -- 마젠타젬 착용중일시 마젠타젬 레벨 확인
+                            local gemname = tostring(GET_RELIC_GEM_NAME_WITH_FONT(gem_cls))
+                            -- 면류관 레벨이 4 미만이면 뉴비라 가정하고 봐주자. 하지만 면류관렙이 4 이상이지만
+                            -- 마젠타 젬 레벨이 2이하면 이새끼는 무조건 날먹입니다
+                            local gemlv = equipItem:GetEquipGemLv(_type)
+                            if (reliclv > 4 and gemlv < gemCeiling) then
+                                isnalmuk = true
+                                local message = string.format("[%s] 레벨이 [%d]입니다. ", gemname, gemlv)
+                                reason = reason .. message
+                            end
                         end
                     end
                 end
@@ -290,4 +295,14 @@ function in_array(value, array)
         end
     end
     return -1
+end
+
+function g.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName];
+        _G[baseFuncName] = func
+    end
+    base[baseFuncName] = _G[replacementName]
 end

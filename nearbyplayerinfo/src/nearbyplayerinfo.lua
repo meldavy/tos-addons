@@ -22,10 +22,13 @@ NearbyPlayerInfo.Settings = {
     Position = {
         X = 400,
         Y = 400
-    }
+    },
+    ExtraRows = 0
 };
 
 NearbyPlayerInfo.Default = {
+    MaxRows = 10,
+    RowHeight = 26,
     Width = 350,
     Height = 250,
     IsVisible = 1,
@@ -70,7 +73,7 @@ function NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
     frame:SetOffset(NearbyPlayerInfo.Settings.Position.X, NearbyPlayerInfo.Settings.Position.Y);
 
     -- set default size and visibility
-    frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height);
+    frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
     frame:ShowWindow(NearbyPlayerInfo.Settings.Visible);
 
     -- controls
@@ -78,13 +81,46 @@ function NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
     title:SetFontName("white_16_ol")
     title:SetText("/nearbyplayers")
     title:EnableHitTest(0)
-    local pclist = frame:CreateOrGetControl("groupbox", "pclist", NearbyPlayerInfo.Default.Width - 15, 200, ui.LEFT, ui.TOP, 10, 40, 0, 0);
+    local expandButton = frame:CreateOrGetControl("button", "expandBtn", 30, 30, ui.RIGHT, ui.TOP, 0, 5, 40, 0);
+    expandButton:SetFontName("white_16_ol")
+    expandButton:SetText("+")
+    expandButton:EnableHitTest(1)
+    expandButton:SetTextTooltip("크기 증가")
+    expandButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_EXPAND_ROW");
+    local contractButton = frame:CreateOrGetControl("button", "contractBtn", 30, 30, ui.RIGHT, ui.TOP, 0, 5, 5, 0);
+    contractButton:SetFontName("white_16_ol")
+    contractButton:SetText("-")
+    contractButton:EnableHitTest(1)
+    contractButton:SetTextTooltip("크기 축소")
+    contractButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_CONTRACT_ROW");
+
+    local pclist = frame:CreateOrGetControl("groupbox", "pclist", NearbyPlayerInfo.Default.Width - 15, (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight), ui.LEFT, ui.TOP, 10, 40, 0, 0);
     AUTO_CAST(pclist)
     pclist:EnableScrollBar(1);
     -- pclist:EnableHitTest(1);
     ReserveScript("NEARBYPLAYERINFO_ON_TICK()", 1)
     frame:RunUpdateScript("NEARBYPLAYERINFO_ON_TICK", 3)
 end
+
+function NEARBYPLAYERINFO_EXPAND_ROW(frame)
+    if (NearbyPlayerInfo.Settings.ExtraRows < NearbyPlayerInfo.Default.MaxRows) then
+        NearbyPlayerInfo.Settings.ExtraRows = NearbyPlayerInfo.Settings.ExtraRows + 1
+        frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        local pclist = frame:GetChild("pclist")
+        pclist:Resize(NearbyPlayerInfo.Default.Width - 15, (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        NEARBYPLAYERINFO_SAVE_SETTINGS()
+    end
+end
+function NEARBYPLAYERINFO_CONTRACT_ROW(frame)
+    if (NearbyPlayerInfo.Settings.ExtraRows > 0) then
+        NearbyPlayerInfo.Settings.ExtraRows = NearbyPlayerInfo.Settings.ExtraRows - 1
+        frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        local pclist = frame:GetChild("pclist")
+        pclist:Resize(NearbyPlayerInfo.Default.Width - 15, (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        NEARBYPLAYERINFO_SAVE_SETTINGS()
+    end
+end
+
 
 function NEARBYPLAYERINFO_ON_TICK(frame)
     NearbyPlayerInfo:FindNearbyObjects()
@@ -143,6 +179,10 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
 end
 
 function NEARBYPLAYERINFO_ON_PC_COMPARE(cid)
+    NearbyPlayerInfo.ProcessPCCompare(cid)
+end
+
+function NearbyPlayerInfo.ProcessPCCompare(cid)
     if (seenMembers[cid] == nil) then
         base["SHOW_PC_COMPARE"](cid)
         return
@@ -167,7 +207,7 @@ function NearbyPlayerInfo.DrawUserInfo(self, handle)
     -- get the hud of PC to get guild data
     local pchud = ui.GetFrame('charbaseinfo1_' .. handle);
     -- check to see if we already have an entry for this player
-    local pcinfo = groupbox:CreateOrGetControl("groupbox", "pcinfo_" .. handle, NearbyPlayerInfo.Default.Width - 15, 26, ui.LEFT, ui.TOP, 0, ((groupbox:GetChildCount() - 1) * 22), 0, 0);
+    local pcinfo = groupbox:CreateOrGetControl("groupbox", "pcinfo_" .. handle, NearbyPlayerInfo.Default.Width - 15, NearbyPlayerInfo.Default.RowHeight, ui.LEFT, ui.TOP, 0, ((groupbox:GetChildCount() - 1) * 22), 0, 0);
     if (pchud ~= nil) then
         AUTO_CAST(pcinfo)
         pcinfo:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_MEMBERINFO");
@@ -269,8 +309,6 @@ function NearbyPlayerInfo.SetupHook(func, baseFuncName)
     if (_G[replacementName] == nil) then
         _G[replacementName] = _G[baseFuncName];
         _G[baseFuncName] = func
-        base[baseFuncName] = _G[replacementName]
-    else
-        base[baseFuncName] = _G[replacementName]
     end
+    base[baseFuncName] = _G[replacementName]
 end
