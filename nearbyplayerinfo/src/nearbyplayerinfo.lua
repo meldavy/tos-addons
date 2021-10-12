@@ -10,6 +10,7 @@ _G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {}
 -- get a pointer to the area
 local NearbyPlayerInfo = _G['ADDONS'][author][addonName]
 local acutil = require('acutil')
+local base = {}
 
 local seenMembers = {}
 local playerDetails = {}
@@ -49,7 +50,8 @@ function NEARBYPLAYERINFO_ON_INIT(addon, frame)
     playerDetails = {}
     acutil.slashCommand('/nearbyplayers', NEARBYPLAYERINFO_PROCESS_COMMAND)
     acutil.slashCommand('/np', NEARBYPLAYERINFO_PROCESS_COMMAND)
-    acutil.setupHook(NEARBYPLAYERINFO_ON_PC_COMPARE, 'SHOW_PC_COMPARE')
+    NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_PC_COMPARE, "SHOW_PC_COMPARE")
+
     -- initialize frame
     NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
 end
@@ -142,7 +144,7 @@ end
 
 function NEARBYPLAYERINFO_ON_PC_COMPARE(cid)
     if (seenMembers[cid] == nil) then
-        SHOW_PC_COMPARE_OLD(cid)
+        base["SHOW_PC_COMPARE"](cid)
         return
     end
     seenMembers[cid] = nil
@@ -259,4 +261,16 @@ end
 
 function NEARBYPLAYERINFO_SAVE_SETTINGS()
     acutil.saveJSON(NearbyPlayerInfo.SettingsFileLoc, NearbyPlayerInfo.Settings);
+end
+
+function NearbyPlayerInfo.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName];
+        _G[baseFuncName] = func
+        base[baseFuncName] = _G[replacementName]
+    else
+        base[baseFuncName] = _G[replacementName]
+    end
 end
