@@ -14,6 +14,7 @@ local base = {}
 
 local seenMembers = {}
 local playerDetails = {}
+local kda = {}
 
 NearbyPlayerInfo.SettingsFileLoc = string.format('../addons/%s/settings.json', addonName)
 
@@ -23,7 +24,8 @@ NearbyPlayerInfo.Settings = {
         X = 400,
         Y = 400
     },
-    ExtraRows = 0
+    ExtraRows = 0,
+    WarMode = 0
 };
 
 NearbyPlayerInfo.Default = {
@@ -51,75 +53,100 @@ function NEARBYPLAYERINFO_ON_INIT(addon, frame)
     if (NearbyPlayerInfo.Settings.ExtraRows == nil) then
         NearbyPlayerInfo.Settings.ExtraRows = 0
     end
+    if (NearbyPlayerInfo.Settings.WarMode == nil) then
+        NearbyPlayerInfo.Settings.WarMode = 0
+    end
 
     seenMembers = {}
     playerDetails = {}
     acutil.slashCommand('/nearbyplayers', NEARBYPLAYERINFO_PROCESS_COMMAND)
     acutil.slashCommand('/np', NEARBYPLAYERINFO_PROCESS_COMMAND)
     NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_PC_COMPARE, "SHOW_PC_COMPARE")
+    NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE, "SEND_KILL_DEAD_MESSAGE")
 
     -- initialize frame
     NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
 end
 
-function NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
-    -- enable frame reposition through drag and move
-    frame:EnableMove(NearbyPlayerInfo.Default.Movable);
-    frame:EnableHitTest(NearbyPlayerInfo.Default.Enabled);
-    frame:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_END_DRAG");
+function NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE(Deader, killer)
+    NearbyPlayerInfo.ProcessSendKillDeadMessage(Deader, killer)
+end
 
-    -- draw the frame
-    frame:SetSkinName('chat_window_2');
+function NearbyPlayerInfo.ProcessSendKillDeadMessage(Deader, killer)
+    if (NearbyPlayerInfo.Settings.WarMode == 1) then
+        local killerHandle = GetHandle(killer)
+        local deadHandle = GetHandle(Deader)
+        if (killerHandle ~= nil) then
+            if (kda[killerHandle] == nil) then
+                kda[killerHandle] = { k = 1, d = 0 }
+            else
+                kda[killerHandle].k = kda[killerHandle].k + 1
+            end
+            NearbyPlayerInfo:UpdateWarmodeInfo(killerHandle)
+        end
+        if (deadHandle ~= nil) then
+            if (kda[deadHandle] == nil) then
+                kda[deadHandle] = { k = 0, d = 1 }
+            else
+                kda[deadHandle].d = kda[deadHandle].d + 1
+            end
+            NearbyPlayerInfo:UpdateWarmodeInfo(deadHandle)
+        end
+    end
+    base["SEND_KILL_DEAD_MESSAGE"](Deader, killer)
+end
 
-    -- set default position of frame
-    frame:Move(NearbyPlayerInfo.Settings.Position.X, NearbyPlayerInfo.Settings.Position.Y);
-    frame:SetOffset(NearbyPlayerInfo.Settings.Position.X, NearbyPlayerInfo.Settings.Position.Y);
+function NearbyPlayerInfo.UpdateWarmodeInfo(self, handle)
+    local frame = ui.GetFrame('nearbyplayerinfo')
+    local groupbox = frame:GetChildRecursively('pclist')
 
-    -- set default size and visibility
-    frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
-    frame:ShowWindow(NearbyPlayerInfo.Settings.Visible);
+    -- check to see if we already have an entry for this player
+    local pcinfo = groupbox:GetChild("pcinfo_" .. handle)
+    if (pcinfo ~= nil) then
+        local warmode = pcinfo:GetChild("warmode");
+        warmode:SetText(NearbyPlayerInfo:GetKDAString(handle))
+    end
+end
 
-    -- controls
-    local title = frame:CreateOrGetControl("richtext", "title", NearbyPlayerInfo.Default.Width - 20, 20, ui.LEFT, ui.TOP, 10, 10, 0, 0);
-    title:SetFontName("white_16_ol")
-    title:SetText("/nearbyplayers")
-    title:EnableHitTest(0)
-    local expandButton = frame:CreateOrGetControl("button", "expandBtn", 30, 30, ui.RIGHT, ui.TOP, 0, 5, 40, 0);
-    expandButton:SetFontName("white_16_ol")
-    expandButton:SetText("+")
-    expandButton:EnableHitTest(1)
-    expandButton:SetTextTooltip("크기 증가")
-    expandButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_EXPAND_ROW");
-    local contractButton = frame:CreateOrGetControl("button", "contractBtn", 30, 30, ui.RIGHT, ui.TOP, 0, 5, 5, 0);
-    contractButton:SetFontName("white_16_ol")
-    contractButton:SetText("-")
-    contractButton:EnableHitTest(1)
-    contractButton:SetTextTooltip("크기 축소")
-    contractButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_CONTRACT_ROW");
+function NearbyPlayerInfo.GetKDAString(self, handle)
+    if (kda[handle] == nil) then
+        kda[handle] = { k = 0, d = 0 }
+    end
+    local killIcon = "icon_" .. GetClassByType('Buff', 2993).Icon
+    local deathIcon = "icon_" .. GetClassByType('Buff', 2991).Icon
+    local format = "{img %s 24 24} %d {img %s 24 24} %d"
+    local msg = string.format(format, killIcon, kda[handle].k, deathIcon, kda[handle].d)
+    return msg
+end
 
-    local pclist = frame:CreateOrGetControl("groupbox", "pclist", NearbyPlayerInfo.Default.Width - 15, (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight), ui.LEFT, ui.TOP, 10, 40, 0, 0);
-    AUTO_CAST(pclist)
-    pclist:EnableScrollBar(1);
-    -- pclist:EnableHitTest(1);
-    ReserveScript("NEARBYPLAYERINFO_ON_TICK()", 1)
-    frame:RunUpdateScript("NEARBYPLAYERINFO_ON_TICK", 3)
+function NEARBYPLAYERINFO_WARMODE_TOGGLE(frame)
+    if (NearbyPlayerInfo.Settings.WarMode == 0) then
+        NearbyPlayerInfo.Settings.WarMode = 1
+    else
+        NearbyPlayerInfo.Settings.WarMode = 0
+    end
+    NEARBYPLAYERINFO_SAVE_SETTINGS()
+    frame:Resize(NearbyPlayerInfo.Default.Width + (NearbyPlayerInfo.Settings.WarMode * 150), frame:GetHeight());
+    local pclist = frame:GetChild("pclist")
+    pclist:Resize(NearbyPlayerInfo.Default.Width - 15 + (NearbyPlayerInfo.Settings.WarMode * 150), pclist:GetHeight());
 end
 
 function NEARBYPLAYERINFO_EXPAND_ROW(frame)
     if (NearbyPlayerInfo.Settings.ExtraRows < NearbyPlayerInfo.Default.MaxRows) then
         NearbyPlayerInfo.Settings.ExtraRows = NearbyPlayerInfo.Settings.ExtraRows + 1
-        frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        frame:Resize(NearbyPlayerInfo.Default.Width + (NearbyPlayerInfo.Settings.WarMode * 150), NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
         local pclist = frame:GetChild("pclist")
-        pclist:Resize(NearbyPlayerInfo.Default.Width - 15, (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        pclist:Resize(NearbyPlayerInfo.Default.Width - 15 + (NearbyPlayerInfo.Settings.WarMode * 150), (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
         NEARBYPLAYERINFO_SAVE_SETTINGS()
     end
 end
+
 function NEARBYPLAYERINFO_CONTRACT_ROW(frame)
     if (NearbyPlayerInfo.Settings.ExtraRows > 0) then
         NearbyPlayerInfo.Settings.ExtraRows = NearbyPlayerInfo.Settings.ExtraRows - 1
-        frame:Resize(NearbyPlayerInfo.Default.Width, NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        frame:Resize(NearbyPlayerInfo.Default.Width + (NearbyPlayerInfo.Settings.WarMode * 150), NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
         local pclist = frame:GetChild("pclist")
-        pclist:Resize(NearbyPlayerInfo.Default.Width - 15, (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+        pclist:Resize(NearbyPlayerInfo.Default.Width - 15 + (NearbyPlayerInfo.Settings.WarMode * 150), (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
         NEARBYPLAYERINFO_SAVE_SETTINGS()
     end
 end
@@ -131,6 +158,18 @@ function NEARBYPLAYERINFO_ON_TICK(frame)
 end
 
 function NearbyPlayerInfo.FindNearbyObjects(self)
+    --local pc = GetMyPCObject();
+    --local layer = GetLayer(pc)
+    --local zone = GetZoneInstID(pc)
+    --local list, cnt = GetLayerPCList(GetZoneInstID(pc))
+    --if cnt >= 1 then
+    --    print(cnt)
+    --    for i = 1, cnt do
+    --        if list[i].ClassName == 'PC' then
+    --        end
+    --    end
+    --end
+
     local myHandle = session.GetMyHandle()
     local frame = ui.GetFrame('nearbyplayerinfo')
     local groupbox = frame:GetChildRecursively('pclist')
@@ -163,6 +202,11 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
                 end
                 if (name_b == 'None') then
                     name_b = ""
+                end
+                if (name_a == name_b) then
+                    if (kda[a] ~= nil and kda[b] ~= nil) then
+                        return kda[a].k > kda[b].k
+                    end
                 end
                 return name_a > name_b
             end
@@ -210,7 +254,7 @@ function NearbyPlayerInfo.DrawUserInfo(self, handle)
     -- get the hud of PC to get guild data
     local pchud = ui.GetFrame('charbaseinfo1_' .. handle);
     -- check to see if we already have an entry for this player
-    local pcinfo = groupbox:CreateOrGetControl("groupbox", "pcinfo_" .. handle, NearbyPlayerInfo.Default.Width - 15, NearbyPlayerInfo.Default.RowHeight, ui.LEFT, ui.TOP, 0, ((groupbox:GetChildCount() - 1) * 22), 0, 0);
+    local pcinfo = groupbox:CreateOrGetControl("groupbox", "pcinfo_" .. handle, NearbyPlayerInfo.Default.Width + 200, NearbyPlayerInfo.Default.RowHeight, ui.LEFT, ui.TOP, 0, ((groupbox:GetChildCount() - 1) * 22), 0, 0);
     if (pchud ~= nil) then
         AUTO_CAST(pcinfo)
         pcinfo:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_MEMBERINFO");
@@ -230,8 +274,13 @@ function NearbyPlayerInfo.DrawUserInfo(self, handle)
         joblist:SetFontName("white_16_ol")
         if (playerDetails[handle] ~= nil) then
             joblist:SetText(tostring(playerDetails[handle].Job))
-            joblist:SetText(tostring(playerDetails[handle].Job))
         end
+
+        -- warmode control
+        local warmode = pcinfo:CreateOrGetControl("richtext", "warmode",  100, 20, ui.LEFT, ui.TOP, 350, 0, 0, 0);
+        warmode:EnableHitTest(0)
+        warmode:SetFontName("white_16_ol")
+        warmode:SetText(NearbyPlayerInfo:GetKDAString(handle))
 
         -- create or update guild emblem
         local emblem = pcinfo:CreateOrGetControl("picture", "guildemblem",  23, 23, ui.LEFT, ui.TOP, 0, 0, 0, 0);
@@ -294,6 +343,57 @@ end
 
 function NEARBYPLAYERINFO_MEMBERINFO(frame, ctrl, argStr, handle)
     ui.PropertyCompare(handle, 1);
+end
+
+function NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
+    -- enable frame reposition through drag and move
+    frame:EnableMove(NearbyPlayerInfo.Default.Movable);
+    frame:EnableHitTest(NearbyPlayerInfo.Default.Enabled);
+    frame:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_END_DRAG");
+
+    -- draw the frame
+    frame:SetSkinName('chat_window_2');
+
+    -- set default position of frame
+    frame:Move(NearbyPlayerInfo.Settings.Position.X, NearbyPlayerInfo.Settings.Position.Y);
+    frame:SetOffset(NearbyPlayerInfo.Settings.Position.X, NearbyPlayerInfo.Settings.Position.Y);
+
+    -- set default size and visibility
+    frame:Resize(NearbyPlayerInfo.Default.Width + (NearbyPlayerInfo.Settings.WarMode * 150),
+            NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
+    frame:ShowWindow(NearbyPlayerInfo.Settings.Visible);
+
+    -- controls
+    local title = frame:CreateOrGetControl("richtext", "title", NearbyPlayerInfo.Default.Width - 20, 20, ui.LEFT, ui.TOP, 10, 10, 0, 0);
+    title:SetFontName("white_16_ol")
+    title:SetText("/nearbyplayers")
+    title:EnableHitTest(0)
+    local expandButton = frame:CreateOrGetControl("button", "expandBtn", 30, 30, ui.RIGHT, ui.TOP, 0, 5, 40, 0);
+    expandButton:SetFontName("white_16_ol")
+    expandButton:SetText("+")
+    expandButton:EnableHitTest(1)
+    expandButton:SetTextTooltip("크기 증가")
+    expandButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_EXPAND_ROW");
+    local contractButton = frame:CreateOrGetControl("button", "contractBtn", 30, 30, ui.RIGHT, ui.TOP, 0, 5, 5, 0);
+    contractButton:SetFontName("white_16_ol")
+    contractButton:SetText("-")
+    contractButton:EnableHitTest(1)
+    contractButton:SetTextTooltip("크기 축소")
+    contractButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_CONTRACT_ROW");
+    local warmodeButton = frame:CreateOrGetControl("button", "warmodeBtn", 60, 30, ui.RIGHT, ui.TOP, 0, 5, 75, 0);
+    warmodeButton:SetFontName("white_16_ol")
+    warmodeButton:SetText("전쟁 모드")
+    warmodeButton:EnableHitTest(1)
+    warmodeButton:SetTextTooltip("전쟁 모드")
+    warmodeButton:SetEventScript(ui.LBUTTONUP, "NEARBYPLAYERINFO_WARMODE_TOGGLE");
+
+    local pclist = frame:CreateOrGetControl("groupbox", "pclist", NearbyPlayerInfo.Default.Width - 15 + (NearbyPlayerInfo.Settings.WarMode * 150),
+            (NearbyPlayerInfo.Default.Height - 50) + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight), ui.LEFT, ui.TOP, 10, 40, 0, 0);
+    AUTO_CAST(pclist)
+    pclist:EnableScrollBar(1);
+    -- pclist:EnableHitTest(1);
+    ReserveScript("NEARBYPLAYERINFO_ON_TICK()", 1)
+    frame:RunUpdateScript("NEARBYPLAYERINFO_ON_TICK", 3)
 end
 
 function NEARBYPLAYERINFO_END_DRAG(frame, ctrl)
