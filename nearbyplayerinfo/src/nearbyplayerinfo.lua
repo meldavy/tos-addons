@@ -272,13 +272,13 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
                         pcframe = ui.CreateNewFrame("nearbyplayerinfo", "follow_" .. targetHandle);
                         pcframe:Resize(50, 50)
                         pcframe:SetSkinName("None")
-                        pcframe:SetLayerLevel(19); -- 미니맵 안가릴정도
+                        pcframe:SetLayerLevel(22); -- 콜리니 hud 위에 표시
                         pcframe:EnableHitTest(0);
-                        local itemPic = pcframe:CreateOrGetControl("picture", "silver", 50, 50, ui.LEFT, ui.TOP, 0, 0, 0, 0);
-                        AUTO_CAST(itemPic)
-                        local silverCls = GetClassByType('Buff', 620018);
-                        itemPic:SetImage("icon_" .. silverCls.Icon);
-                        itemPic:SetEnableStretch(1)
+                        local targetEmblem = pcframe:CreateOrGetControl("picture", "targetEmblem", 50, 50, ui.LEFT, ui.TOP, 0, 0, 0, 0);
+                        AUTO_CAST(targetEmblem)
+                        targetEmblem:SetImage("trasuremapmark");
+                        targetEmblem:SetEnableStretch(1)
+                        targetEmblem:SetBlink(0.0, 1.0, "FFFF5555");
                         local offsetY = -20;
                         pcframe:ShowWindow(1)
                         FRAME_AUTO_POS_TO_OBJ(pcframe, targetHandle, -pcframe:GetWidth() / 2, offsetY, 3);
