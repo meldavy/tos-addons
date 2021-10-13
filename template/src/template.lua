@@ -73,6 +73,31 @@ function TEMPLATE_SAVE_SETTINGS()
     acutil.saveJSON(Template.SettingsFileLoc, Template.Settings);
 end
 
+-- general utilities
+
+Template.Strings = {
+    ["string_name"] = {
+        ['kr'] = "안녕 세상아",
+        ['en'] = "Hello World"
+    }
+}
+
+function Template.GetTranslatedString(self, strName)
+    local countrycode = option.GetCurrentCountry()
+    local language = 'kr'
+    if countrycode == 'kr' then
+        language = 'kr'
+    else
+        language = 'en'
+    end
+
+    if (self.Strings[strName] == nil) then
+        return nil
+    else
+        return self.Strings[strName][language]
+    end
+end
+
 function Template.SetupHook(func, baseFuncName)
     local addonUpper = string.upper(addonName)
     local replacementName = addonUpper .. "_BASE_" .. baseFuncName
