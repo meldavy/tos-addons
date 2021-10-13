@@ -1,3 +1,5 @@
+--dofile("../data/addon_d/autoawakening/autoawakening.lua");
+
 -- areas defined
 local author = 'meldavy'
 local addonName = 'autoawakening'
@@ -8,6 +10,7 @@ _G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {}
 -- get a pointer to the area
 local AutoAwakening = _G['ADDONS'][author][addonName]
 local acutil = require('acutil')
+local base = {}
 
 local isPerformingAuto = false;
 
@@ -40,27 +43,36 @@ local MARKET_OPTION_GROUP_PROP_LIST = {
 function AUTOAWAKENING_ON_INIT(addon, frame)
     AutoAwakening.addon = addon;
     AutoAwakening.frame = frame;
-    acutil.setupHook(AUTOAWAKENING_SUCCESS_ITEM_AWAKENING, 'SUCCESS_ITEM_AWAKENING')
-    acutil.setupHook(AUTOAWAKENING_OPEN_ITEMDUNGEON_BUYER, 'OPEN_ITEMDUNGEON_BUYER')
-    acutil.setupHook(AUTOAWAKENING_DROP_WEALTH_ITEM, 'ITEMDUNGEON_DROP_WEALTH_ITEM')
-    acutil.setupHook(AUTOAWAKENING_RESET_ABRASIVE, 'ITEMDUNGEON_RESET_ABRASIVE')
-    acutil.setupHook(AUTOAWAKENING_RESET_STONE, 'ITEMDUNGEON_RESET_STONE')
-    acutil.setupHook(AUTOAWAKENING_DROP_ITEM, 'ITEMDUNGEON_DROP_ITEM')
-    acutil.setupHook(AUTOAWAKENING_INV_RBTN, 'ITEMDUNGEON_INV_RBTN')
-    acutil.setupHook(AUTOAWAKENING_CLEARUI, 'ITEMDUNGEON_CLEARUI')
-    acutil.setupHook(AUTOAWAKENING_INIT_FOR_BUYER, 'ITEMDUNGEON_INIT_FOR_BUYER')
+    print("init")
+    AutoAwakening.SetupHook(AUTOAWAKENING_SUCCESS_ITEM_AWAKENING, 'SUCCESS_ITEM_AWAKENING')
+    AutoAwakening.SetupHook(AUTOAWAKENING_OPEN_ITEMDUNGEON_BUYER, 'OPEN_ITEMDUNGEON_BUYER')
+    AutoAwakening.SetupHook(AUTOAWAKENING_DROP_WEALTH_ITEM, 'ITEMDUNGEON_DROP_WEALTH_ITEM')
+    AutoAwakening.SetupHook(AUTOAWAKENING_RESET_ABRASIVE, 'ITEMDUNGEON_RESET_ABRASIVE')
+    AutoAwakening.SetupHook(AUTOAWAKENING_RESET_STONE, 'ITEMDUNGEON_RESET_STONE')
+    AutoAwakening.SetupHook(AUTOAWAKENING_DROP_ITEM, 'ITEMDUNGEON_DROP_ITEM')
+    AutoAwakening.SetupHook(AUTOAWAKENING_INV_RBTN, 'ITEMDUNGEON_INV_RBTN')
+    AutoAwakening.SetupHook(AUTOAWAKENING_CLEARUI, 'ITEMDUNGEON_CLEARUI')
+    AutoAwakening.SetupHook(AUTOAWAKENING_INIT_FOR_BUYER, 'ITEMDUNGEON_INIT_FOR_BUYER')
+    print("end init")
 end
 
 function AUTOAWAKENING_INIT_FOR_BUYER(frame, isSeller)
-    ITEMDUNGEON_INIT_FOR_BUYER_OLD(frame, isSeller)
+    AutoAwakening.ProcessInitForBuyer(frame, isSeller)
+end
 
+function AutoAwakening.ProcessInitForBuyer(frame, isSeller)
+    base["ITEMDUNGEON_INIT_FOR_BUYER"](frame, isSeller)
     -- vars
     isPerformingAuto = false;
 end
 
 -- 인벤 우클릭으로 아이템 등록 (장비 재료 둘다)
 function AUTOAWAKENING_INV_RBTN(itemobj, invslot, invguid)
-    ITEMDUNGEON_INV_RBTN_OLD(itemobj, invslot, invguid)
+    AutoAwakening.ProcessInvRbtn(itemobj, invslot, invguid)
+end
+
+function AutoAwakening.ProcessInvRbtn(itemobj, invslot, invguid)
+    base["ITEMDUNGEON_INV_RBTN"](itemobj, invslot, invguid)
     AutoAwakening:RedrawSlots();
     -- 장비가 등록 되었으면 옵션 선택 목록 드로우
     if (AutoAwakening:IsTargetItemSlotted() == true) then
@@ -72,15 +84,24 @@ function AUTOAWAKENING_INV_RBTN(itemobj, invslot, invguid)
     end
 end
 
+
 -- 드래그로 재료 등록
 function AUTOAWAKENING_DROP_WEALTH_ITEM(parent, ctrl)
-    ITEMDUNGEON_DROP_WEALTH_ITEM_OLD(parent, ctrl)
+    AutoAwakening.ProcessDropWealthItem(parent, ctrl)
+end
+
+function AutoAwakening.ProcessDropWealthItem(parent, ctrl)
+    base["ITEMDUNGEON_DROP_WEALTH_ITEM"](parent, ctrl)
     AutoAwakening:RedrawSlots();
 end
 
 -- 드래그로 장비 등록
 function AUTOAWAKENING_DROP_ITEM(parent, ctrl)
-    ITEMDUNGEON_DROP_ITEM_OLD(parent, ctrl)
+    AutoAwakening.ProcessDropItem(parent, ctrl)
+end
+
+function AutoAwakening.ProcessDropItem(parent, ctrl)
+    base["ITEMDUNGEON_DROP_ITEM"](parent, ctrl)
     AutoAwakening:RedrawSlots();
     -- 장비가 등록 되있으면 옵션 선택 목록 드로우
     if (AutoAwakening:IsTargetItemSlotted() == true) then
@@ -90,6 +111,10 @@ end
 
 -- 프레임 종료, 혹은 장비 우클릭으로 등록 해제 할경우 클리어 발생.
 function AUTOAWAKENING_CLEARUI(frame)
+    AutoAwakening.ProcessClearUI(frame)
+end
+
+function AutoAwakening.ProcessClearUI(frame)
     AutoAwakening:ClearTimers();
 
     -- 커스텀 컨트롤들 전부 클리어
@@ -107,7 +132,7 @@ function AUTOAWAKENING_CLEARUI(frame)
     end
 
     -- 기존 UI클리어 함수
-    ITEMDUNGEON_CLEARUI_OLD(frame)
+    base["ITEMDUNGEON_CLEARUI"](frame)
 
     -- 아이콘 클리어
     if (frame ~= nil and frame:IsVisible() == 1) then
@@ -118,19 +143,31 @@ end
 
 -- 연마제 등록 해제 될때 슬롯 다시 그림
 function AUTOAWAKENING_RESET_ABRASIVE(frame)
-    ITEMDUNGEON_RESET_ABRASIVE_OLD(frame);
+    AutoAwakening.ProcessResetAbrasive(frame)
+end
+
+function AutoAwakening.ProcessResetAbrasive(frame)
+    base["ITEMDUNGEON_RESET_ABRASIVE"](frame);
     AutoAwakening:RedrawSlots();
 end
 
 -- 각성석 등록 해제 될때 슬롯 다시 그림
 function AUTOAWAKENING_RESET_STONE(frame)
-    ITEMDUNGEON_RESET_STONE_OLD(frame);
+    AutoAwakening.ProcessResetStone(frame)
+end
+
+function AutoAwakening.ProcessResetStone(frame)
+    base["ITEMDUNGEON_RESET_STONE"](frame);
     AutoAwakening:RedrawSlots();
 end
 
 -- 커스텀 ui 컨트롤들 그림
 function AUTOAWAKENING_OPEN_ITEMDUNGEON_BUYER(groupName, sellType, handle)
-    OPEN_ITEMDUNGEON_BUYER_OLD(groupName, sellType, handle)
+    AutoAwakening.ProcessOpenItemdungeonBuyer(groupName, sellType, handle)
+end
+
+function AutoAwakening.ProcessOpenItemdungeonBuyer(groupName, sellType, handle)
+    base["OPEN_ITEMDUNGEON_BUYER"](groupName, sellType, handle)
 
     local frame = ui.GetFrame('itemdungeon')
 
@@ -367,6 +404,10 @@ end
 
 -- 각성시 본인이 정한 옵션인지 확인
 function AUTOAWAKENING_SUCCESS_ITEM_AWAKENING(frame)
+    AutoAwakening.ProcessSuccessItemAwakening(frame)
+end
+
+function AutoAwakening.ProcessSuccessItemAwakening(frame)
     local edit = GET_CHILD_RECURSIVELY(frame, "countedit");
     AUTO_CAST(edit)
     local curCnt = tonumber(edit:GetText());
@@ -453,6 +494,8 @@ function AutoAwakening:GetSelectedTargetType(self)
         props = MARKET_OPTION_GROUP_PROP_LIST.WEAPON
     elseif equipGroup == 'SHIRT' or equipGroup == 'PANTS' or equipGroup == 'BOOTS' or equipGroup == 'GLOVES' then
         props = MARKET_OPTION_GROUP_PROP_LIST.DEF
+    elseif itemClassType == 'Neck' or itemClassType == 'Ring' then
+        props = MARKET_OPTION_GROUP_PROP_LIST.DEF
     elseif itemClassType == 'Shield' then
         props = MARKET_OPTION_GROUP_PROP_LIST.WEAPON
     else
@@ -494,6 +537,8 @@ function AutoAwakening.RedrawDroplist(self)
             props = MARKET_OPTION_GROUP_PROP_LIST.DEF
         elseif itemClassType == 'Shield' then
             props = MARKET_OPTION_GROUP_PROP_LIST.WEAPON
+        elseif itemClassType == 'Neck' or itemClassType == 'Ring' then
+            props = MARKET_OPTION_GROUP_PROP_LIST.DEF
         else
             -- this shouldn't happen
         end
@@ -545,19 +590,19 @@ function AutoAwakening.RedrawSlots(self)
         local stoneNameText = GET_CHILD_RECURSIVELY(frame, 'stoneNameText');
         if (stoneNameText:IsVisible() == 0) then
             SET_SLOT_COUNT_TEXT(stoneSlot, "");
-            ITEMDUNGEON_RESET_STONE_OLD(frame);
+            base["ITEMDUNGEON_RESET_STONE"](frame);
         else
             local invStoneItem, isEquip  = GET_PC_ITEM_BY_GUID(stoneIcon:GetInfo():GetIESID());
             if (invStoneItem ~= nil) then
                 SET_SLOT_COUNT_TEXT(stoneSlot, invStoneItem.count);
             else
                 SET_SLOT_COUNT_TEXT(stoneSlot, "");
-                ITEMDUNGEON_RESET_STONE_OLD(frame);
+                base["ITEMDUNGEON_RESET_STONE"](frame);
             end
         end
     else
         SET_SLOT_COUNT_TEXT(stoneSlot, "");
-        ITEMDUNGEON_RESET_STONE_OLD(frame);
+        base["ITEMDUNGEON_RESET_STONE"](frame);
     end
 
     -- redraw the abrasiveSlot
@@ -568,19 +613,19 @@ function AutoAwakening.RedrawSlots(self)
         local abrasiveNameText = GET_CHILD_RECURSIVELY(frame, 'abrasiveNameText');
         if (abrasiveNameText:IsVisible() == 0) then
             SET_SLOT_COUNT_TEXT(abrasiveSlot, "");
-            ITEMDUNGEON_RESET_ABRASIVE_OLD(frame);
+            base["ITEMDUNGEON_RESET_ABRASIVE"](frame);
         else
             local invAbrasiveItem, isEquip  = GET_PC_ITEM_BY_GUID(abrasiveIcon:GetInfo():GetIESID());
             if (invAbrasiveItem ~= nil) then
                 SET_SLOT_COUNT_TEXT(abrasiveSlot, invAbrasiveItem.count);
             else
                 SET_SLOT_COUNT_TEXT(abrasiveSlot, "");
-                ITEMDUNGEON_RESET_ABRASIVE_OLD(frame);
+                base["ITEMDUNGEON_RESET_ABRASIVE"](frame);
             end
         end
     else
         SET_SLOT_COUNT_TEXT(abrasiveSlot, "");
-        ITEMDUNGEON_RESET_ABRASIVE_OLD(frame);
+        base["ITEMDUNGEON_RESET_ABRASIVE"](frame);
     end
 end
 
@@ -627,4 +672,14 @@ function AutoAwakening:ClearTimers(self)
     local addontimer = frame:GetChild("addontimer");
     AUTO_CAST(addontimer)
     addontimer:Stop();
+end
+
+function AutoAwakening.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName];
+        _G[baseFuncName] = func
+    end
+    base[baseFuncName] = _G[replacementName]
 end
