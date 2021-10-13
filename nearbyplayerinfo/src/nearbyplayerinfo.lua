@@ -15,6 +15,7 @@ local base = {}
 local seenMembers = {}
 local playerDetails = {}
 local kda = {}
+local visiblePlayers = {}
 
 NearbyPlayerInfo.SettingsFileLoc = string.format('../addons/%s/settings.json', addonName)
 
@@ -63,9 +64,12 @@ function NEARBYPLAYERINFO_ON_INIT(addon, frame)
     acutil.slashCommand('/np', NEARBYPLAYERINFO_PROCESS_COMMAND)
     NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_PC_COMPARE, "SHOW_PC_COMPARE")
     NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE, "SEND_KILL_DEAD_MESSAGE")
-
+    addon:RegisterMsg('GAME_START_3SEC', 'NEARBYPLAYERINFO_GAME_START');
     -- initialize frame
     NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
+end
+
+function NEARBYPLAYERINFO_GAME_START(frame)
 end
 
 function NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE(Deader, killer)
@@ -122,8 +126,14 @@ end
 function NEARBYPLAYERINFO_WARMODE_TOGGLE(frame)
     if (NearbyPlayerInfo.Settings.WarMode == 0) then
         NearbyPlayerInfo.Settings.WarMode = 1
+        frame:StopUpdateScript("NEARBYPLAYERINFO_ON_TICK")
+        ReserveScript("NEARBYPLAYERINFO_ON_TICK()", 0)
+        frame:RunUpdateScript("NEARBYPLAYERINFO_ON_TICK", 1)
     else
         NearbyPlayerInfo.Settings.WarMode = 0
+        frame:StopUpdateScript("NEARBYPLAYERINFO_ON_TICK")
+        ReserveScript("NEARBYPLAYERINFO_ON_TICK()", 0)
+        frame:RunUpdateScript("NEARBYPLAYERINFO_ON_TICK", 3)
     end
     NEARBYPLAYERINFO_SAVE_SETTINGS()
     frame:Resize(NearbyPlayerInfo.Default.Width + (NearbyPlayerInfo.Settings.WarMode * 150), frame:GetHeight());
@@ -142,7 +152,7 @@ function NEARBYPLAYERINFO_EXPAND_ROW(frame)
 end
 
 function NEARBYPLAYERINFO_CONTRACT_ROW(frame)
-    if (NearbyPlayerInfo.Settings.ExtraRows > 0) then
+    if (NearbyPlayerInfo.Settings.ExtraRows > -5) then
         NearbyPlayerInfo.Settings.ExtraRows = NearbyPlayerInfo.Settings.ExtraRows - 1
         frame:Resize(NearbyPlayerInfo.Default.Width + (NearbyPlayerInfo.Settings.WarMode * 150), NearbyPlayerInfo.Default.Height + (NearbyPlayerInfo.Settings.ExtraRows * NearbyPlayerInfo.Default.RowHeight));
         local pclist = frame:GetChild("pclist")
@@ -170,18 +180,41 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
     --    end
     --end
 
+    local guildMembers = {}
+    local partyMemberList = session.party.GetPartyMemberList(PARTY_GUILD)
+    if partyMemberList ~= nil then
+        local count = partyMemberList:Count()
+        for i = 0 , count - 1 do
+            local info = partyMemberList:Element(i)
+            local name = info:GetName()
+            guildMembers[name] = 1
+        end
+    end
+
     local myHandle = session.GetMyHandle()
     local frame = ui.GetFrame('nearbyplayerinfo')
     local groupbox = frame:GetChildRecursively('pclist')
     groupbox:RemoveAllChild()
     local objList, objCount = SelectObject(GetMyActor(), 10000, 'ALL')
     local handles = {}
+    local perGuildCount = {}
+    local playerGuild = {}
     for i = 1, objCount do
         local targetHandle = GetHandle(objList[i])
         if (objList[i].ClassName == 'PC') then
             local pchud = ui.GetFrame('charbaseinfo1_' .. targetHandle);
             if (pchud ~= nil) then
                 if (targetHandle ~= myHandle) then
+                    visiblePlayers[targetHandle] = 1
+                    local guildName = pchud:GetChildRecursively('guildName')
+                    if (guildName ~= nil) then
+                        local guildNameText = guildName:GetText()
+                        playerGuild[targetHandle] = guildNameText
+                        if (perGuildCount[guildNameText] == nil) then
+                            perGuildCount[guildNameText] = 0
+                        end
+                        perGuildCount[guildNameText] = perGuildCount[guildNameText] + 1
+                    end
                     table.insert(handles, targetHandle)
                 end
             end
@@ -214,13 +247,73 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
         return true
     end)
 
+    local prevGuildName = ""
+    local topIndex = 0
     for k, targetHandle in pairs(handles) do
+
+        -- getting highest killcount players
+        if (prevGuildName ~= playerGuild[targetHandle]) then
+            prevGuildName = playerGuild[targetHandle]
+            topIndex = 0
+        end
+        topIndex = topIndex + 1
+
         NearbyPlayerInfo:DrawUserInfo(targetHandle)
+        -- create frame for this handle if it doesn't already exist
+        -- warmode
+        if (NearbyPlayerInfo.Settings.WarMode == 1) then
+            --
+            local familyName = info.GetFamilyName(targetHandle);
+            if (guildMembers[familyName] == nil) then
+                -- if not ally
+                if (topIndex <= 2) then
+                    local pcframe = ui.GetFrame("follow_" .. targetHandle)
+                    if (pcframe == nil) then
+                        pcframe = ui.CreateNewFrame("nearbyplayerinfo", "follow_" .. targetHandle);
+                        pcframe:Resize(50, 50)
+                        pcframe:SetSkinName("None")
+                        pcframe:SetLayerLevel(19); -- 미니맵 안가릴정도
+                        pcframe:EnableHitTest(0);
+                        local itemPic = pcframe:CreateOrGetControl("picture", "silver", 50, 50, ui.LEFT, ui.TOP, 0, 0, 0, 0);
+                        AUTO_CAST(itemPic)
+                        local silverCls = GetClassByType('Buff', 620018);
+                        itemPic:SetImage("icon_" .. silverCls.Icon);
+                        itemPic:SetEnableStretch(1)
+                        local offsetY = -20;
+                        pcframe:ShowWindow(1)
+                        FRAME_AUTO_POS_TO_OBJ(pcframe, targetHandle, -pcframe:GetWidth() / 2, offsetY, 3);
+                    end
+                else
+                    ui.DestroyFrame("follow_" .. targetHandle);
+                end
+            end
+        else
+            ui.DestroyFrame("follow_" .. targetHandle);
+        end
         if (playerDetails[targetHandle] == nil) then
             -- only make network call if we haven't already memberinfo'd this player
             local cid = info.GetCID(targetHandle);
             seenMembers[cid] = 1
             ui.PropertyCompare(targetHandle, 1);
+        end
+    end
+
+    local seenMembers = {}
+    -- cleanup, first do a xor
+    for handle, value in pairs(visiblePlayers) do
+        if (value == 1) then
+            seenMembers[handle] = 1
+        end
+    end
+    for k, handle in pairs(handles) do
+        seenMembers[handle] = 0
+    end
+    -- find all seen but invisible handles and cleanup
+    for handle, value in pairs(seenMembers) do
+        if (value == 1) then
+            local familyName = info.GetFamilyName(handle);
+            ui.DestroyFrame("follow_" .. handle);
+            visiblePlayers[handle] = nil
         end
     end
 end
