@@ -1,3 +1,5 @@
+--dofile("../data/addon_d/banderilla/banderilla.lua");
+
 -- areas defined
 local author = 'meldavy'
 local addonName = 'banderilla'
@@ -125,7 +127,7 @@ end
 -- 타이머 틱
 function BANDERILLA_ON_TIMER_UPDATE(frame)
     -- 타겟의 반데릴라 디버프 확인
-    local buff = info.GetBuff(session.GetTargetHandle(), Banderilla.DEBUFF_ID)
+    local buff = Banderilla:GetBanderillaDebuff(session.GetTargetHandle())
     -- 타겟에 반데릴라 디버프가 없을경우 주변 몬스터의 반데릴라 중첩 확인
     if (buff == nil) then
         buff = Banderilla:FindNearbyDebuffTarget()
@@ -145,18 +147,66 @@ function BANDERILLA_ON_TIMER_UPDATE(frame)
     end
 end
 
+local lastSeenIndex = -1
+
+-- 본인이 시전한 반데릴라 디버프 찾아봄
 function Banderilla.GetBanderillaDebuff(self, handle)
+    -- 일단 있는지 없는지 확인
     local buff = info.GetBuff(handle, Banderilla.DEBUFF_ID)
-    return buff
+    if (buff == nil) then
+        return
+    end
+    local myHandle = session.GetMyHandle()
+    local casterHandle = buff:GetHandle();
+    -- 만약 본인의 반데릴라 디버프라면 이걸로 선택
+    if (casterHandle == myHandle) then
+        lastSeenIndex = buff.index
+        return buff
+    end
+    -- 만약 본인의 반데릴라가 아니였다면 (반데 유저가 본인 외에도 있을때)
+    -- 이전에 찾아둔 반데 디버프 아이디가 있다면 그거 써서 찾아봄
+    if (lastSeenIndex > -1) then
+        buff = info.GetBuff(handle, Banderilla.DEBUFF_ID, lastSeenIndex)
+        if (buff ~= nil) then
+            -- 이게 맞다면 선택
+            return buff
+        end
+    end
+    -- 만약 이전에 찾아뒀던 반데 아이디로도 본인의 반데 디버프를 못찾았다면...
+    -- 디버프 찾기 시작
+    if (buff == nil or lastSeenIndex == -1) then
+        -- 적의 모든 버프 확인
+        local buffCount = info.GetBuffCount(handle);
+        for i = 0, buffCount - 1 do
+            local targetBuff = info.GetBuffIndexed(handle, i);
+            if targetBuff ~= nil then
+                -- 버프가 반데릴라라면
+                if (targetBuff.buffID == Banderilla.DEBUFF_ID) then
+                    local targetBuffCaster = targetBuff:GetHandle();
+                    -- 시전자가 본인이라면
+                    if (targetBuffCaster == myHandle) then
+                        lastSeenIndex = targetBuff.index
+                        return targetBuff
+                    end
+                end
+            end
+        end
+    end
 end
 
 function Banderilla.FindNearbyDebuffTarget(self)
-    local list, count = SelectObject(GetMyPCObject(), 500, 'ALL')
+    local list, count = SelectObject(GetMyPCObject(), 500, 'ENEMY')
     for i = 1, count do
         local handle = GetHandle(list[i])
         local buff = info.GetBuff(handle, Banderilla.DEBUFF_ID)
+        -- 만약 반데 버프가 있다면
         if (buff ~= nil) then
-            return buff
+            -- 본인이 시전한것인지 확인
+            buff = Banderilla:GetBanderillaDebuff(handle)
+            if (buff ~= nil) then
+                -- 맞다면 그걸로 선택
+                return buff
+            end
         end
     end
     return nil
