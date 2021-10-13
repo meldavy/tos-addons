@@ -1,3 +1,5 @@
+--dofile("../data/addon_d/bettercrossguard/bettercrossguard.lua");
+
 -- areas defined
 local author = 'meldavy'
 local addonName = 'bettercrossguard'
@@ -20,15 +22,23 @@ function BETTERCROSSGUARD_ON_INIT(addon, frame)
     addon:RegisterMsg('TARGET_BUFF_UPDATE', 'CROSSGUARD_ON_TARGET_BUFF_UPDATE');
 end
 
-function CROSSGUARD_ON_TARGET_BUFF_UPDATE(frame, timer, argstr, argNum, passedtime)
+function CROSSGUARD_ON_TARGET_BUFF_UPDATE(frame, timer, argStr, argNum, passedtime)
     if (BetterCrossguard:IsCrossguard()) then
-        BetterCrossguard:PlayEffectOnCrossguard(argNum)
+        local buffIndex = 0
+        if (argStr ~= 'None') then
+            buffIndex = tonumber(argStr)
+        end
+        BetterCrossguard:PlayEffectOnCrossguard(argNum, buffIndex)
     end
 end
 
 function CROSSGUARD_ON_TARGET_BUFF_ADD(frame, msg, argStr, argNum)
     if (BetterCrossguard:IsCrossguard()) then
-        BetterCrossguard:PlayEffectOnCrossguard(argNum)
+        local buffIndex = 0
+        if (argStr ~= 'None') then
+            buffIndex = tonumber(argStr)
+        end
+        BetterCrossguard:PlayEffectOnCrossguard(argNum, buffIndex)
     end
 end
 
@@ -39,14 +49,20 @@ function BetterCrossguard.IsCrossguard(self)
     return buff ~= nil
 end
 
-function BetterCrossguard.PlayEffectOnCrossguard(self, argNum)
+function BetterCrossguard.PlayEffectOnCrossguard(self, argNum, buffIndex)
     if argNum == self.CROSSGUARD_DEBUFF_ID then
         local myHandle = session.GetMyHandle()
         local actor = world.GetActor(myHandle)
         local targetHandle = session.GetTargetHandle()
         local target = world.GetActor(targetHandle)
-        effect.PlayActorEffect(actor, 'F_warrior_shield002', 'Dummy_bufficon', 2.0, 10.0)
-        effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
-        imcSound.PlaySoundEvent('sys_tp_box_3');
+        local crossguardDebuff = info.GetBuff(targetHandle, argNum, buffIndex);
+        if (crossguardDebuff ~= nil) then
+            local casterHandle = crossguardDebuff:GetHandle();
+            if (casterHandle == myHandle) then
+                effect.PlayActorEffect(actor, 'F_warrior_shield002', 'Dummy_bufficon', 2.0, 10.0)
+                effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
+                imcSound.PlaySoundEvent('sys_tp_box_3');
+            end
+        end
     end
 end
