@@ -18,3 +18,4 @@ An Addon that displays a gauge for Banderilla. Even if the monster or boss with 
 
 
 * v1.0.1 -- fix an issue with PVP by adding 0.01 delay when target is not locked
+* v1.0.1 -- potential fix when multiple banderilla users are in a single party

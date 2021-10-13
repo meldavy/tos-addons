@@ -17,8 +17,8 @@
         "name": "Banderilla",
         "file": "banderilla",
         "extension": "ipf",
-        "fileVersion": "v1.0.1",
-        "releaseTag": "initial",
+        "fileVersion": "v1.0.2",
+        "releaseTag": "banderilla-v1.0.2",
         "unicode": "📖",
         "description": "Keeps track of Banderilla debuff duration. 반데릴라 디버프 시간 관리",
         "tags": [
