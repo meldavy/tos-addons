@@ -146,7 +146,16 @@ function SEPARATEDPCDEBUFF_BUFF_TOTAL_COUNT_CHECK(frame, msg, buffType, handle, 
     local isOtherCastBuff = false;
     local isPCCastBuff = false;
     local pcHandle = session.GetMyHandle();
-    local buff = info.GetBuff(handle, buffType);
+
+    if "None" == buffIndex or nil == buffIndex then
+        buffIndex = 0;
+    end
+    buffIndex = tonumber(buffIndex);
+
+    local buff = info.GetBuff(handle, buffType, buffIndex);
+    if (buff == nil) then
+        buff = info.GetBuff(handle, buffType);
+    end
     if buff ~= nil then
         local casterHandle = buff:GetHandle();
         if casterHandle ~= nil and casterHandle ~= handle then
@@ -306,7 +315,10 @@ function SEPARATEDPCDEBUFF_COMMON_BUFF_MSG(frame, msg, buffType, handle, buff_ui
     local isOtherCastBuff = false;
     local isPCCastBuff = false;
     local pcHandle = session.GetMyHandle();
-    local buff = info.GetBuff(handle, buffType);
+    local buff = info.GetBuff(handle, buffType, buffIndex)
+    if (buff == nil) then
+        buff = info.GetBuff(handle, buffType);
+    end
     if buff ~= nil then
         local casterHandle = buff:GetHandle();
         if casterHandle ~= nil and casterHandle ~= handle then
