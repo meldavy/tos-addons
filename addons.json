@@ -3,8 +3,8 @@
         "name": "AutoAwakening",
         "file": "autoawakening",
         "extension": "ipf",
-        "fileVersion": "v1.0.1",
-        "releaseTag": "initial",
+        "fileVersion": "v1.0.2",
+        "releaseTag": "autoawakening-v1.0.2",
         "unicode": "📖",
         "description": "Automate gear awakening. 자동 장비 각성",
         "tags": [
