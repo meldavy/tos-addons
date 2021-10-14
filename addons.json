@@ -158,8 +158,8 @@
         "name": "NearbyPlayerInfo",
         "file": "nearbyplayerinfo",
         "extension": "ipf",
-        "fileVersion": "v1.0.3",
-        "releaseTag": "nearbyplayerinfo-v1.0.3",
+        "fileVersion": "v1.0.4",
+        "releaseTag": "nearbyplayerinfo-v1.0.4",
         "unicode": "📖",
         "description": "Easily view info of players around you. 주변 인물들의 멤버인포를 쉽게 보세요.",
         "tags": [
