@@ -10,6 +10,7 @@ _G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {}
 -- get a pointer to the area
 local Miniacquisition = _G['ADDONS'][author][addonName]
 local acutil = require('acutil')
+local base = {}
 
 Miniacquisition.SettingsFileLoc = string.format('../addons/%s/settings.json', addonName)
 
@@ -41,7 +42,7 @@ function MINIACQUISITION_ON_INIT(addon, frame)
         end
     end
     -- initialize frame
-    acutil.setupHook(MINIACQUISITION_ADD_SEQUENTIAL_PICKITEM, 'ADD_SEQUENTIAL_PICKITEM')
+    Miniacquisition.SetupHook(MINIACQUISITION_ADD_SEQUENTIAL_PICKITEM, 'ADD_SEQUENTIAL_PICKITEM')
 end
 
 function MINIACQUISITION_ADD_SEQUENTIAL_PICKITEM(frame, msg, itemGuid, itemCount, class, tablekey, fromWareHouse, addMsg)
@@ -109,17 +110,18 @@ function MINIACQUISITION_ON_FRAME_INIT(frame, itemGuid, itemCount)
     local titleText = frame:CreateOrGetControl("richtext", "name", 50, 10, 0, 0);
     titleText:SetFontName("white_16_ol");
 
+    -- <userconfig GRADE_TEXT_FONT="{#ffffff}" NORMAL_GRADE_TEXT="{@st41b}{s14}{#ffffff}노말" MAGIC_GRADE_TEXT="{@st41b}{s14}{#0e7fe8}매직" RARE_GRADE_TEXT="{@st41b}{s14}{#a124d0}레어" UNIQUE_GRADE_TEXT="{@st41b}{s14}{#d92400}유니크" LEGEND_GRADE_TEXT="{@st41b}{s14}{#ffa800}레전드" GODDESS_GRADE_TEXT="{@st41b}{s14}{#009999}가디스" CANNOT_EQUIP_LEVEL_FONT="{#62100c}"/>
     local grade = TryGetProp(itemCls, 'ItemGrade', 0)
     if (grade > 5) then
-        printName = '{#42ecf5}' .. printName
+        printName = '{#009999}' .. printName
     elseif (grade == 5) then
-        printName = '{#f5d442}' .. printName
+        printName = '{#ffa800}' .. printName
     elseif (grade == 4) then
-        printName = '{#f56642}' .. printName
+        printName = '{#d92400}' .. printName
     elseif (grade == 3) then
-        printName = '{#bf3bf7}' .. printName
+        printName = '{#a124d0}' .. printName
     elseif (grade == 2) then
-        printName = '{#42e3f5}' .. printName
+        printName = '{#0e7fe8}' .. printName
     elseif (grade == 1) then
     end
 
@@ -157,4 +159,14 @@ end
 
 function MINIACQUISITION_SAVE_SETTINGS()
     acutil.saveJSON(Miniacquisition.SettingsFileLoc, Miniacquisition.Settings);
+end
+
+function Miniacquisition.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName];
+        _G[baseFuncName] = func
+    end
+    base[baseFuncName] = _G[replacementName]
 end
