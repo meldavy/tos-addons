@@ -10,3 +10,4 @@ This addon makes it smaller!
 ![image](https://user-images.githubusercontent.com/12102540/136194064-267b20b5-6acc-4219-b3e5-e63e991acbdf.png)
 
 * v1.0.2 - when joystick mode, shift up the UI a bit so that it doesn't overlap with skill bar
+* v1.0.4 - update font color to resemble actual font color
