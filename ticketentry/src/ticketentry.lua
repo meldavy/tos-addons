@@ -10,6 +10,7 @@ _G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {}
 -- get a pointer to the area
 local TicketEntry = _G['ADDONS'][author][addonName]
 local acutil = require('acutil')
+local base = {}
 
 TicketEntry.TICKETS = {
     [11030197] = 656, -- 거불 바실리사 입장권
@@ -56,16 +57,20 @@ function TICKETENTRY_ON_INIT(addon, frame)
     TicketEntry.addon = addon;
     TicketEntry.frame = frame;
 
-    acutil.setupHook(TICKETENTRY_ICON_USE, 'ICON_USE');
-    acutil.setupHook(TICKETENTRY_INVENTORY_RBDC_ITEMUSE, 'INVENTORY_RBDC_ITEMUSE');
+    TicketEntry.SetupHook(TICKETENTRY_ICON_USE, 'ICON_USE');
+    TicketEntry.SetupHook(TICKETENTRY_INVENTORY_RBDC_ITEMUSE, 'INVENTORY_RBDC_ITEMUSE');
 end
 
 -- 핫키 슬롯 사용
 function TICKETENTRY_ICON_USE(object, reAction)
+    TicketEntry.ItemUse(object, reAction)
+end
+
+function TicketEntry.ItemUse(object, reAction)
     local indenEnterFrame = ui.GetFrame("indunenter");
     if (indenEnterFrame ~= nil and indenEnterFrame:IsVisible() == 1) then
         -- 이미 인던창이 열려있다면 아이템 사용
-        ICON_USE_OLD(object, reAction)
+        base["ICON_USE"](object, reAction)
         return;
     end
     if ((TicketEntry:IsTownMap() == true) and (keyboard.IsKeyPressed("LSHIFT") == 1)) then
@@ -88,15 +93,25 @@ function TICKETENTRY_ICON_USE(object, reAction)
             end
         end
     end
-    ICON_USE_OLD(object, reAction)
+    base["ICON_USE"](object, reAction)
 end
 
 -- 인벤토리 아이템 사용
 function TICKETENTRY_INVENTORY_RBDC_ITEMUSE(frame, object, argStr, argNum)
+    TicketEntry.InventoryRBDCItemUse(frame, object, argStr, argNum)
+end
+
+function TicketEntry.InventoryRBDCItemUse(frame, object, argStr, argNum)
     local indenEnterFrame = ui.GetFrame("indunenter");
     if (indenEnterFrame ~= nil and indenEnterFrame:IsVisible() == 1) then
         -- 이미 인던창이 열려있다면 아이템 사용
-        INVENTORY_RBDC_ITEMUSE_OLD(frame, object, argStr, argNum)
+        base["INVENTORY_RBDC_ITEMUSE"](frame, object, argStr, argNum)
+        return;
+    end
+    local warehouseFrame = ui.GetFrame("accountwarehouse");
+    if (warehouseFrame ~= nil and warehouseFrame:IsVisible() == 1) then
+        -- 창고가 열려있다면 창고에 넣어줌
+        base["INVENTORY_RBDC_ITEMUSE"](frame, object, argStr, argNum)
         return;
     end
     local invItem = GET_SLOT_ITEM(object);
@@ -134,7 +149,7 @@ function TICKETENTRY_INVENTORY_RBDC_ITEMUSE(frame, object, argStr, argNum)
             return;
         end
     end
-    INVENTORY_RBDC_ITEMUSE_OLD(frame, object, argStr, argNum)
+    base["INVENTORY_RBDC_ITEMUSE"](frame, object, argStr, argNum)
 end
 
 function ON_TICKET_ENTRY_ON_LOST_FOCUS(frame)
@@ -170,4 +185,14 @@ function TicketEntry.IsTownMap(self)
     local mapProp = session.GetCurrentMapProp()
     local mapCls = GetClassByType('Map', mapProp.type)
     return IS_TOWN_MAP(mapCls)
+end
+
+function TicketEntry.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName];
+        _G[baseFuncName] = func
+    end
+    base[baseFuncName] = _G[replacementName]
 end
