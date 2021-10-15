@@ -24,7 +24,7 @@ BountyHud.Settings = {
 BountyHud.Default = {
     Height = 330,
     Width = 300,
-    IsVisible = 0,
+    IsVisible = 1,
     Movable = 1,
     Enabled = 1, -- Hittest
 };
@@ -110,7 +110,7 @@ end
 function BOUNTYHUD_BOUNTY_END(frame)
     frame:ShowWindow(0)
     ui.DestroyFrame("compass");
-    local loadedNearbyPath = false
+    loadedNearbyPath = false
 end
 
 function BOUNTYHUD_CHARACTER_UPDATE(frame, msg, argStr, argNum)
@@ -172,6 +172,11 @@ function BountyHud.GetAdjacentMaps(self, mapName)
         local iconName = MonProp:GetMinimapIcon()
         if (iconName == 'minimap_portal' or iconName == 'minimap_erosion') then
             local warpCls = GetClass("Warp", MonProp:GetDialog());
+            if (warpCls == nil) then
+                for match in MonProp:GetDialog():gmatch("[a-zA-Z]+_(.*)") do
+                    warpCls = GetClass("Warp", match);
+                end
+            end
             if (warpCls ~= nil) then
                 local targetZone = TryGetProp(warpCls, "TargetZone", "None");
                 if (targetZone ~= "None") then
@@ -261,7 +266,7 @@ function BOUNTYHUD_HIGHLIGHT_NEAREST_PATH(destID)
 
             local destination = compass:CreateOrGetControl("richtext", "destination", 100, 20, ui.CENTER_HORZ, ui.BOTTOM, 0, 0, 0, 0);
             destination:SetFontName("white_16_ol")
-            destination:SetText(nextMapCls.Name .. "(" .. min .. ")")
+            destination:SetText(nextMapCls.Name .. " (" .. (min + 1) .. ")")
             destination:EnableHitTest(0)
 
             local offsetY = -20;
@@ -330,7 +335,13 @@ function BOUNTYHUD_GAME_START(frame)
             local GenList = MonProp.GenList;
             local GenCnt = GenList:Count();
             for j = 0 , GenCnt - 1 do
+                local dialog = MonProp:GetDialog()
                 local warpCls = GetClass("Warp", MonProp:GetDialog());
+                if (warpCls == nil) then
+                    for match in MonProp:GetDialog():gmatch("[a-zA-Z]+_(.*)") do
+                        warpCls = GetClass("Warp", match);
+                    end
+                end
                 if (warpCls ~= nil) then
                     local clsName = TryGetProp(warpCls, "TargetZone", "None");
                     local pos = GenList:Element(j);
