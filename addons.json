@@ -72,8 +72,8 @@
         "name": "TicketEntry",
         "file": "ticketentry",
         "extension": "ipf",
-        "fileVersion": "v1.0.2",
-        "releaseTag": "ticketentry-v1.0.2",
+        "fileVersion": "v1.0.3",
+        "releaseTag": "ticketentry-v1.0.3",
         "unicode": "📖",
         "description": "Display AutoMatching UI by shift+rmb on an entry ticket. 입장권 쉬프트+우클릭으로 자동매칭UI 보여줌",
         "tags": [
