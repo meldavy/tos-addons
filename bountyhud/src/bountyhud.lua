@@ -24,7 +24,7 @@ BountyHud.Settings = {
 BountyHud.Default = {
     Height = 330,
     Width = 300,
-    IsVisible = 1,
+    IsVisible = 0,
     Movable = 1,
     Enabled = 1, -- Hittest
 };
