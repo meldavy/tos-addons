@@ -22,9 +22,9 @@ QuickWarehouseInsert.Settings = {
 };
 
 QuickWarehouseInsert.Default = {
-    Height = 100,
-    Width = 100,
-    IsVisible = 1,
+    Height = 0,
+    Width = 0,
+    IsVisible = 0,
     Movable = 1,
     Enabled = 1, -- Hittest
 };
