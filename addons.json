@@ -170,8 +170,8 @@
         "name": "QuickWarehouseInsert",
         "file": "quickwarehouseinsert",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "quickwarehouseinsert-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "quickwarehouseinsert-v1.0.1",
         "unicode": "📖",
         "description": "SHIFT+RMB on a stackable inventory item to put into the warehouse without having to type in the quantity. 시프트 우클릭으로 갯수 입력 할필요 없이 바로 아이템을 창고로 이동.",
         "tags": [
