@@ -182,8 +182,8 @@
         "name": "BountyHUD",
         "file": "bountyhud",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "bountyhud-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "bountyhud-v1.0.1",
         "unicode": "📖",
         "description": "Bounty hunt navigation addon. 바운티 헌트 네비게이션 애드온입니다.",
         "tags": [
