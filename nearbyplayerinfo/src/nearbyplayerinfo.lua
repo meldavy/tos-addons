@@ -293,23 +293,23 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
         if (playerDetails[targetHandle] == nil) then
             -- only make network call if we haven't already memberinfo'd this player
             local cid = info.GetCID(targetHandle);
-            seenMembers[cid] = 1
+            seenMembers[targetHandle] = 1
             ui.PropertyCompare(targetHandle, 1);
         end
     end
 
-    local seenMembers = {}
+    local evaluatedMembers = {}
     -- cleanup, first do a xor
     for handle, value in pairs(visiblePlayers) do
         if (value == 1) then
-            seenMembers[handle] = 1
+            evaluatedMembers[handle] = 1
         end
     end
     for k, handle in pairs(handles) do
-        seenMembers[handle] = 0
+        evaluatedMembers[handle] = 0
     end
     -- find all seen but invisible handles and cleanup
-    for handle, value in pairs(seenMembers) do
+    for handle, value in pairs(evaluatedMembers) do
         if (value == 1) then
             local familyName = info.GetFamilyName(handle);
             ui.DestroyFrame("follow_" .. handle);
@@ -323,12 +323,13 @@ function NEARBYPLAYERINFO_ON_PC_COMPARE(cid)
 end
 
 function NearbyPlayerInfo.ProcessPCCompare(cid)
-    if (seenMembers[cid] == nil) then
+    local otherpcinfo = session.otherPC.GetByStrCID(cid);
+    local targetHandle = otherpcinfo:GetHandleVal();
+    if (seenMembers[targetHandle] == nil) then
         base["SHOW_PC_COMPARE"](cid)
         return
     end
-    seenMembers[cid] = nil
-    local otherpcinfo = session.otherPC.GetByStrCID(cid);
+    seenMembers[targetHandle] = nil
     NearbyPlayerInfo:DrawAdditionalInfo(otherpcinfo)
 end
 
