@@ -21,34 +21,16 @@ local searchhandle = nil
 local infernalshadowsearchlock = 0
 local testbox = {
     {0, 0, 0},
-    {-25, 0, 0},
     {-12, 0, 0},
     {12, 0, 0},
-    {25, 0, 0},
 
     {0, 5, 0},
-    {-25, 5, 0},
     {-12, 5, 0},
     {12, 5, 0},
-    {25, 5, 0},
 
     {0, 10, 0},
-    {-25, 10, 0},
     {-12, 10, 0},
     {12, 10, 0},
-    {25, 10, 0},
-
-    {0, 15, 0},
-    {-25, 15, 0},
-    {-12, 15, 0},
-    {12, 15, 0},
-    {25, 15, 0},
-
-    {0, 25, 0},
-    {-25, 25, 0},
-    {-12, 25, 0},
-    {12, 25, 0},
-    {25, 25, 0}
 }
 local searchattempts = 1
 local firstpos = nil
@@ -64,6 +46,8 @@ function INFERNALSHADOW_ON_INIT(addon, frame)
     -- 명령어
     acutil.slashCommand('/infernal', INFERNALSHADOW_PROCESS_COMMAND)
     acutil.slashCommand('/인퍼널', INFERNALSHADOW_PROCESS_COMMAND)
+
+    local addontimer = frame:CreateOrGetControl("timer", "addontimer", 10, 10);
 end
 
 function INFERNALSHADOW_PROCESS_COMMAND(command)
@@ -115,7 +99,7 @@ function INFERNALSHADOW_USE_SKILL(frame, slot, argStr, argNum)
 end
 
 -- 탐색 실행
-function BEGIN_INFERNAL_TARGET_SEARCH_ACTIVITY()
+function BEGIN_INFERNAL_TARGET_SEARCH_ACTIVITY(frame)
     if (session.GetTargetHandle() == searchhandle or searchhandle == nil) then
         -- short circuit
         END_INFERNAL_TARGET_SEARCH_ACTIVITY()
@@ -143,7 +127,6 @@ function BEGIN_INFERNAL_TARGET_SEARCH_ACTIVITY()
         if (searchattempts > #testbox) then
             END_INFERNAL_TARGET_SEARCH_ACTIVITY()
         end
-        ReserveScript("BEGIN_INFERNAL_TARGET_SEARCH_ACTIVITY()", 0.005)
     end
 end
 
@@ -153,6 +136,10 @@ function END_INFERNAL_TARGET_SEARCH_ACTIVITY()
         infernalshadowsearchlock = 0
         mouse.SetPos(firstpos[1], firstpos[2]);
     end
+    local frame = ui.GetFrame("infernalshadow");
+    local __timer = frame:GetChild("addontimer");
+    local timer = tolua.cast(__timer, "ui::CAddOnTimer");
+    timer:Stop();
     session.config.SetMouseMode(false)
     mouse.SetHidable(0);
     searchhandle = nil
@@ -182,7 +169,12 @@ function InfernalShadow.ProcessInfernalShadow(self)
                 firstpos = {mouse.GetX(), mouse.GetY()}
                 session.config.SetMouseMode(true)
                 mouse.SetHidable(0);
-                ReserveScript("BEGIN_INFERNAL_TARGET_SEARCH_ACTIVITY()", 0.01)
+                local frame = ui.GetFrame("infernalshadow");
+                local __timer = frame:GetChild("addontimer");
+                local timer = tolua.cast(__timer, "ui::CAddOnTimer");
+                timer:Stop();
+                timer:SetUpdateScript("BEGIN_INFERNAL_TARGET_SEARCH_ACTIVITY");
+                timer:Start(0.02);
             else
                 -- 이미 탐색 작업중일땐 실행 방지
                 return
@@ -199,7 +191,7 @@ function InfernalShadow.ProcessInfernalShadow(self)
 end
 
 function InfernalShadow.FindNearbyInfernalShadow(self)
-    local list, count = SelectObject(GetMyPCObject(), 500, 'ALL')
+    local list, count = SelectObject(GetMyPCObject(), 500, 'ENEMY')
     for i = 1, count do
         local handle = GetHandle(list[i])
         -- 주변 오브젝트가 인퍼널섀도우인지 확인
