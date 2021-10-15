@@ -43,7 +43,6 @@ local MARKET_OPTION_GROUP_PROP_LIST = {
 function AUTOAWAKENING_ON_INIT(addon, frame)
     AutoAwakening.addon = addon;
     AutoAwakening.frame = frame;
-    print("init")
     AutoAwakening.SetupHook(AUTOAWAKENING_SUCCESS_ITEM_AWAKENING, 'SUCCESS_ITEM_AWAKENING')
     AutoAwakening.SetupHook(AUTOAWAKENING_OPEN_ITEMDUNGEON_BUYER, 'OPEN_ITEMDUNGEON_BUYER')
     AutoAwakening.SetupHook(AUTOAWAKENING_DROP_WEALTH_ITEM, 'ITEMDUNGEON_DROP_WEALTH_ITEM')
@@ -53,7 +52,6 @@ function AUTOAWAKENING_ON_INIT(addon, frame)
     AutoAwakening.SetupHook(AUTOAWAKENING_INV_RBTN, 'ITEMDUNGEON_INV_RBTN')
     AutoAwakening.SetupHook(AUTOAWAKENING_CLEARUI, 'ITEMDUNGEON_CLEARUI')
     AutoAwakening.SetupHook(AUTOAWAKENING_INIT_FOR_BUYER, 'ITEMDUNGEON_INIT_FOR_BUYER')
-    print("end init")
 end
 
 function AUTOAWAKENING_INIT_FOR_BUYER(frame, isSeller)
@@ -116,13 +114,12 @@ end
 
 function AutoAwakening.ProcessClearUI(frame)
     AutoAwakening:ClearTimers();
-
     -- 커스텀 컨트롤들 전부 클리어
-    local frame = ui.GetFrame('itemdungeon')
-    if (frame ~= nil and frame:IsVisible() == 1) then
-        local targetSlot = GET_CHILD_RECURSIVELY(frame, 'targetSlot');
-        local droplist = GET_CHILD_RECURSIVELY(frame, 'droplist');
-        local countedit = GET_CHILD_RECURSIVELY(frame, 'countedit');
+    local itemdungeonFrame = ui.GetFrame('itemdungeon')
+    if (itemdungeonFrame ~= nil and itemdungeonFrame:IsVisible() == 1) then
+        local targetSlot = GET_CHILD_RECURSIVELY(itemdungeonFrame, 'targetSlot');
+        local droplist = GET_CHILD_RECURSIVELY(itemdungeonFrame, 'droplist');
+        local countedit = GET_CHILD_RECURSIVELY(itemdungeonFrame, 'countedit');
         AUTO_CAST(targetSlot);
         AUTO_CAST(droplist);
         AUTO_CAST(countedit);
@@ -130,12 +127,10 @@ function AutoAwakening.ProcessClearUI(frame)
         droplist:ClearItems();
         countedit:SetText(1);
     end
-
     -- 기존 UI클리어 함수
     base["ITEMDUNGEON_CLEARUI"](frame)
-
     -- 아이콘 클리어
-    if (frame ~= nil and frame:IsVisible() == 1) then
+    if (itemdungeonFrame ~= nil and itemdungeonFrame:IsVisible() == 1) then
         AutoAwakening:RedrawTargetSlot();
         AUTOAWAKENING_REDRAW_SLOTS();
     end
@@ -168,9 +163,7 @@ end
 
 function AutoAwakening.ProcessOpenItemdungeonBuyer(groupName, sellType, handle)
     base["OPEN_ITEMDUNGEON_BUYER"](groupName, sellType, handle)
-
     local frame = ui.GetFrame('itemdungeon')
-
     -- containers
     local bgbox = GET_CHILD_RECURSIVELY(frame, 'bg3');
     local mainBox = GET_CHILD_RECURSIVELY(frame, 'mainBox');
@@ -669,9 +662,13 @@ end
 function AutoAwakening:ClearTimers(self)
     isPerformingAuto = false;
     local frame = ui.GetFrame('itemdungeon');
-    local addontimer = frame:GetChild("addontimer");
-    AUTO_CAST(addontimer)
-    addontimer:Stop();
+    if (frame ~= nil) then
+        local addontimer = frame:GetChild("addontimer");
+        if (addontimer ~= nil) then
+            AUTO_CAST(addontimer)
+            addontimer:Stop();
+        end
+    end
 end
 
 function AutoAwakening.SetupHook(func, baseFuncName)
