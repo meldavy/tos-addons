@@ -53,6 +53,11 @@ TicketEntry.DIVISION_TICKETS = {
     [10000470] = 1,
 }
 
+TicketEntry.SOLO_DUNGEON_TICKETS = {
+    [11030169] = 201, -- 1일
+    [11030257] = 201, -- 무제한
+}
+
 function TICKETENTRY_ON_INIT(addon, frame)
     TicketEntry.addon = addon;
     TicketEntry.frame = frame;
@@ -147,6 +152,20 @@ function TicketEntry.InventoryRBDCItemUse(frame, object, argStr, argNum)
         elseif (TicketEntry:IsDivisionTicket(invItem) == 1) then
             ReqChallengeAutoUIOpen(647);
             return;
+        elseif (TicketEntry:IsSoloDungeonTicket(invItem) ~= nil) then
+            local contentID = TicketEntry:IsSoloDungeonTicket(invItem)
+            local indun_cls = GetClassByType("Indun", contentID);
+            if indun_cls ~= nil then
+                local name = TryGetProp(indun_cls, "Name", "None");
+                local account_obj = GetMyAccountObj();
+                if account_obj ~= nil then
+                    local stage = TryGetProp(account_obj, "SOLO_DUNGEON_MINI_CLEAR_STAGE", 0);
+                    local yesScp = "INDUNINFO_MOVE_TO_SOLO_DUNGEON_PRECHECK";
+                    local title = ScpArgMsg("Select_Stage_SoloDungeon", "Stage", stage + 5);
+                    INDUN_EDITMSGBOX_FRAME_OPEN(contentID, title, "", yesScp, "", 1, stage + 5, 1);
+                end
+            end
+            return;
         end
     end
     base["INVENTORY_RBDC_ITEMUSE"](frame, object, argStr, argNum)
@@ -160,6 +179,12 @@ function TICKET_ENTRY_CHALLENGE_ENTER(frame, ctrl, argStr, argNum)
     frame:ShowWindow(0);
     local contentID = argNum
     ReqChallengeAutoUIOpen(contentID);
+end
+
+-- 베르니케
+function TicketEntry.IsSoloDungeonTicket(self, invItem)
+    local cls = invItem.type
+    return TicketEntry.SOLO_DUNGEON_TICKETS[cls]
 end
 
 -- 분열권
