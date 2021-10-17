@@ -63,7 +63,7 @@ function NEARBYPLAYERINFO_ON_INIT(addon, frame)
     acutil.slashCommand('/nearbyplayers', NEARBYPLAYERINFO_PROCESS_COMMAND)
     acutil.slashCommand('/np', NEARBYPLAYERINFO_PROCESS_COMMAND)
     NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_PC_COMPARE, "SHOW_PC_COMPARE")
-    NearbyPlayerInfo.SetupHook(NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE, "SEND_KILL_DEAD_MESSAGE")
+    addon:RegisterMsg('COLONYWAR_GUILD_KILL_MSG', 'NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE')
     addon:RegisterMsg('GAME_START_3SEC', 'NEARBYPLAYERINFO_GAME_START');
     -- initialize frame
     NEARBYPLAYERINFO_ON_FRAME_INIT(frame)
@@ -72,54 +72,62 @@ end
 function NEARBYPLAYERINFO_GAME_START(frame)
 end
 
-function NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE(Deader, killer)
-    NearbyPlayerInfo.ProcessSendKillDeadMessage(Deader, killer)
+function NEARBYPLAYERINFO_ON_SEND_KILL_DEAD_MESSAGE(frame, msg, argstr, argnum)
+    NearbyPlayerInfo.ProcessSendKillDeadMessage(frame, msg, argstr, argnum)
 end
 
-function NearbyPlayerInfo.ProcessSendKillDeadMessage(Deader, killer)
+function NearbyPlayerInfo.ProcessSendKillDeadMessage(frame, msg, argstr, argnum)
     if (NearbyPlayerInfo.Settings.WarMode == 1) then
-        local killerHandle = GetHandle(killer)
-        local deadHandle = GetHandle(Deader)
-        if (killerHandle ~= nil) then
-            if (kda[killerHandle] == nil) then
-                kda[killerHandle] = { k = 1, d = 0 }
+        --local killerName = GetHandle(killer)
+        --local deadName = GetHandle(Deader)
+        --local killerObj = session.otherPC.GetByFamilyName(killerName);
+        --local deaderObj = session.otherPC.GetByFamilyName(deadName);
+        local splitedString = StringSplit(argstr, "#");
+        local killerIcon = splitedString[1];
+        local selfIcon = splitedString[2];
+        local killerName = splitedString[3];
+        local selfName = splitedString[4];
+        local targetGuildName = splitedString[5];
+        local isKilled = splitedString[6];
+        local isMyGuildKilled  = isKilled == "KILL"
+        if (killerName ~= nil) then
+            if (kda[killerName] == nil) then
+                kda[killerName] = { k = 1, d = 0 }
             else
-                kda[killerHandle].k = kda[killerHandle].k + 1
+                kda[killerName].k = kda[killerName].k + 1
             end
-            NearbyPlayerInfo:UpdateWarmodeInfo(killerHandle)
+            NearbyPlayerInfo:UpdateWarmodeInfo(killerName)
         end
-        if (deadHandle ~= nil) then
-            if (kda[deadHandle] == nil) then
-                kda[deadHandle] = { k = 0, d = 1 }
+        if (selfName ~= nil) then
+            if (kda[selfName] == nil) then
+                kda[selfName] = { k = 0, d = 1 }
             else
-                kda[deadHandle].d = kda[deadHandle].d + 1
+                kda[selfName].d = kda[selfName].d + 1
             end
-            NearbyPlayerInfo:UpdateWarmodeInfo(deadHandle)
+            NearbyPlayerInfo:UpdateWarmodeInfo(selfName)
         end
     end
-    base["SEND_KILL_DEAD_MESSAGE"](Deader, killer)
 end
 
-function NearbyPlayerInfo.UpdateWarmodeInfo(self, handle)
+function NearbyPlayerInfo.UpdateWarmodeInfo(self, teamName)
     local frame = ui.GetFrame('nearbyplayerinfo')
     local groupbox = frame:GetChildRecursively('pclist')
 
     -- check to see if we already have an entry for this player
-    local pcinfo = groupbox:GetChild("pcinfo_" .. handle)
-    if (pcinfo ~= nil) then
-        local warmode = pcinfo:GetChild("warmode");
-        warmode:SetText(NearbyPlayerInfo:GetKDAString(handle))
+    local warmode = groupbox:GetChildRecursively("warmode_" .. teamName)
+    if (warmode ~= nil) then
+        warmode:SetText(NearbyPlayerInfo:GetKDAString(teamName))
     end
 end
 
-function NearbyPlayerInfo.GetKDAString(self, handle)
-    if (kda[handle] == nil) then
-        kda[handle] = { k = 0, d = 0 }
+function NearbyPlayerInfo.GetKDAString(self, teamname)
+    if (kda[teamname] == nil) then
+        kda[teamname] = { k = 0, d = 0 }
     end
     local killIcon = "icon_" .. GetClassByType('Buff', 2993).Icon
     local deathIcon = "icon_" .. GetClassByType('Buff', 2991).Icon
     local format = "{img %s 24 24} %d {img %s 24 24} %d"
-    local msg = string.format(format, killIcon, kda[handle].k, deathIcon, kda[handle].d)
+    local msg = string.format(format, killIcon, kda[teamname].k, deathIcon, kda[teamname].d)
     return msg
 end
 
@@ -236,9 +244,11 @@ function NearbyPlayerInfo.FindNearbyObjects(self)
                 if (name_b == 'None') then
                     name_b = ""
                 end
+                local familyNameA = info.GetFamilyName(a);
+                local familyNameB = info.GetFamilyName(b);
                 if (name_a == name_b) then
-                    if (kda[a] ~= nil and kda[b] ~= nil) then
-                        return kda[a].k > kda[b].k
+                    if (kda[familyNameA] ~= nil and kda[familyNameB] ~= nil) then
+                        return kda[familyNameA].k > kda[familyNameB].k
                     end
                 end
                 return name_a > name_b
@@ -343,7 +353,6 @@ function NearbyPlayerInfo.DrawUserInfo(self, handle)
     local actor = world.GetActor(handle)
     local targetName = info.GetFamilyName(handle);
     local targetInfo = info.GetTargetInfo(handle);
-    --local otherpcinfo = session.otherPC.GetByFamilyName(targetName);
 
     -- get the hud of PC to get guild data
     local pchud = ui.GetFrame('charbaseinfo1_' .. handle);
@@ -371,10 +380,10 @@ function NearbyPlayerInfo.DrawUserInfo(self, handle)
         end
 
         -- warmode control
-        local warmode = pcinfo:CreateOrGetControl("richtext", "warmode",  100, 20, ui.LEFT, ui.TOP, 350, 0, 0, 0);
+        local warmode = pcinfo:CreateOrGetControl("richtext", "warmode_" .. targetName,  100, 20, ui.LEFT, ui.TOP, 350, 0, 0, 0);
         warmode:EnableHitTest(0)
         warmode:SetFontName("white_16_ol")
-        warmode:SetText(NearbyPlayerInfo:GetKDAString(handle))
+        warmode:SetText(NearbyPlayerInfo:GetKDAString(targetName))
 
         -- create or update guild emblem
         local emblem = pcinfo:CreateOrGetControl("picture", "guildemblem",  23, 23, ui.LEFT, ui.TOP, 0, 0, 0, 0);
