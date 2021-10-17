@@ -110,7 +110,7 @@ function ANCIENTPRESET_ON_SWAP_CLICK(parent, ctrl)
     for index = 0, 3 do
         local equippedCard = session.ancient.GetAncientCardBySlot(index)
         if (equippedCard ~= nil) then
-            ReserveScript(string.format("ANCIENTPRESET_REMOVE_CARD_IN_SLOT(%d)", index), 0.2 * operationCount)
+            ReserveScript(string.format("ANCIENTPRESET_REMOVE_CARD_IN_SLOT(%d)", index), 0.3 * operationCount)
             operationCount = operationCount + 1
         end
     end
@@ -126,7 +126,7 @@ function ANCIENTPRESET_ON_SWAP_CLICK(parent, ctrl)
                 AncientPreset.Settings.Presets[tabIndex][index] = nil
             end
         end
-        ReserveScript(string.format("ANCIENTPRESET_PUT_CARD_IN_SLOT(%d)", index), 0.2 * (index + operationCount))
+        ReserveScript(string.format("ANCIENTPRESET_PUT_CARD_IN_SLOT(%d)", index), 0.3 * (index + operationCount))
     end
 end
 
