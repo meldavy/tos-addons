@@ -35,13 +35,23 @@ function ANCIENTPRESET_ON_INIT(addon, frame)
     AncientPreset.frame = frame;
     -- load settings
     if not AncientPreset.Loaded then
-        local t, err = acutil.loadJSON(AncientPreset.SettingsFileLoc, AncientPreset.Settings);
+        local t, err = acutil.loadJSON(AncientPreset.SettingsFileLoc);
         if err then
         else
-            AncientPreset.Settings = t;
+            for k, v in pairs(t) do
+                if (AncientPreset.Settings.Presets[tonumber(k)] == nil) then
+                    AncientPreset.Settings.Presets[tonumber(k)] = {}
+                end
+                if (v ~= nil) then
+                    for k2, v2 in pairs(v) do
+                        AncientPreset.Settings.Presets[tonumber(k)][tonumber(k2)] = v2
+                    end
+                end
+            end
             AncientPreset.Loaded = true;
         end
     end
+    ANCIENTPRESET_SAVE_SETTINGS()
     -- initialize frame
 
     AncientPreset.SetupHook(ANCIENTPRESET_OPEN, "ANCIENT_CARD_LIST_OPEN")
@@ -321,7 +331,16 @@ function ANCIENTPRESET_END_DRAG(frame, ctrl)
 end
 
 function ANCIENTPRESET_SAVE_SETTINGS()
-    acutil.saveJSON(AncientPreset.SettingsFileLoc, AncientPreset.Settings);
+    local strPresetTable = {}
+    for k, v in pairs(AncientPreset.Settings.Presets) do
+        strPresetTable[tostring(k)] = {}
+        if (v ~= nil) then
+            for k2, v2 in pairs(v) do
+                strPresetTable[tostring(k)][tostring(k2)] = v2
+            end
+        end
+    end
+    acutil.saveJSON(AncientPreset.SettingsFileLoc, strPresetTable);
 end
 
 -- general utilities
