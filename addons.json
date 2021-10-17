@@ -194,8 +194,8 @@
         "name": "AncientPreset",
         "file": "ancientpreset",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "ancientpreset-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "ancientpreset-v1.0.1",
         "unicode": "📖",
         "description": "Ancient Monster preset addon. 어시스터 프리셋 애드온입니다.",
         "tags": [
