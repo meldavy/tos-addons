@@ -125,7 +125,7 @@ function SPEEDLOADER_ON_FRAME_INIT(frame)
     skillgaugeright:EnableHitTest(0)
     local reloadGauge = frame:CreateOrGetControl("gauge", "reloadGauge", 187, 50, ui.LEFT, ui.TOP, 42, 6, 0, 0);
     AUTO_CAST(reloadGauge)
-    reloadGauge:SetSkinName("banderilla_gauge_yellow")
+    reloadGauge:SetSkinName("speedloader_gauge_yellow")
     reloadGauge:SetPoint(3, 10);
     reloadGauge:AddStat('{s13}%v/%m');
     reloadGauge:SetStatFont(0, 'quickiconfont');
@@ -152,14 +152,14 @@ function SpeedLoader.ProcessSpeedLoader(self, frame)
         local gauge = frame:GetChildRecursively('reloadGauge');
         AUTO_CAST(gauge)
         if (buff.over == 10) then
-            gauge:SetSkinName("banderilla_gauge_green");
+            gauge:SetSkinName("speedloader_gauge_green");
             local actor = world.GetActor(myHandle)
             effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
             imcSound.PlaySoundEvent('sys_tp_box_3');
         elseif (buff.over == 9) then
-            gauge:SetSkinName("banderilla_gauge_orange");
+            gauge:SetSkinName("speedloader_gauge_orange");
         else
-            gauge:SetSkinName("banderilla_gauge_yellow");
+            gauge:SetSkinName("speedloader_gauge_yellow");
         end
         gauge:SetPoint(buff.over, 10);
     end
