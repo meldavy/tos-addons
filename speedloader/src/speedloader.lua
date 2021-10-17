@@ -73,6 +73,9 @@ end
 
 function SPEEDLOADER_ON_BUFF_REMOVE(frame, msg, buffIndex, buffType)
     if (buffType == SpeedLoader.BUFF_ID) then
+        local myHandle = session.GetMyHandle();
+        local actor = world.GetActor(myHandle)
+        effect.DetachActorEffect(actor, "F_pattern025_loop", 0.5);
         frame:ShowWindow(0)
     end
 end
@@ -131,8 +134,10 @@ function SPEEDLOADER_ON_FRAME_INIT(frame)
     reloadGauge:SetStatFont(0, 'quickiconfont');
     reloadGauge:SetStatOffset(0, 0, 0);
     reloadGauge:SetStatAlign(0, ui.CENTER_HORZ, ui.CENTER_VERT);
+    reloadGauge:EnableHitTest(0)
     local infoText = frame:CreateOrGetControl("richtext", "infoText", 200, 20, ui.LEFT, ui.TOP, 44, 0, 0, 0);
     infoText:SetText("{@st42}리로드{/}")
+    infoText:EnableHitTest(0)
 end
 
 function SPEEDLOADER_END_DRAG(frame, ctrl)
@@ -151,16 +156,23 @@ function SpeedLoader.ProcessSpeedLoader(self, frame)
     if (buff ~= nil and buff:GetHandle() == session.GetMyHandle()) then
         local gauge = frame:GetChildRecursively('reloadGauge');
         AUTO_CAST(gauge)
+        gauge:SetPoint(buff.over, 10);
+        if (IsBattleState(GetMyPCObject()) == 0) then
+            -- 전투중일때만 눈뽕 표시
+            return
+        end
+        local actor = world.GetActor(myHandle)
         if (buff.over == 10) then
+            effect.DetachActorEffect(actor, "F_pattern025_loop", 0);
+            effect.AddActorEffectByOffset(actor, "F_pattern025_loop", 4, "MID", true, true);
             gauge:SetSkinName("speedloader_gauge_green");
-            local actor = world.GetActor(myHandle)
-            effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
             imcSound.PlaySoundEvent('sys_tp_box_3');
         elseif (buff.over == 9) then
+            effect.AddActorEffectByOffset(actor, "F_pattern025_loop", 2, "MID", true, true);
             gauge:SetSkinName("speedloader_gauge_orange");
         else
+            effect.DetachActorEffect(actor, "F_pattern025_loop", 0.5);
             gauge:SetSkinName("speedloader_gauge_yellow");
         end
-        gauge:SetPoint(buff.over, 10);
     end
 end
