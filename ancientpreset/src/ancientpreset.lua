@@ -230,6 +230,7 @@ function ANCIENTPRESET_OPEN(frame)
 end
 
 function AncientPreset.AncientPresetOpen(frame)
+    ANCIENTPRESET_ON_TAB_CHANGE(AncientPreset.frame)
     AncientPreset.frame:ShowWindow(1)
     base["ANCIENT_CARD_LIST_OPEN"](frame)
 end
@@ -239,7 +240,6 @@ function ANCIENTPRESET_CLOSE(frame)
 end
 
 function AncientPreset.AncientPresetClose(frame)
-    print("on close")
     AncientPreset.frame:ShowWindow(0)
     base["ANCIENT_CARD_LIST_CLOSE"](frame)
 end
