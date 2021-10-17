@@ -22,8 +22,8 @@ FarmTracker.Settings = {
 };
 
 FarmTracker.Default = {
-    Width = 438,
-    Height = 137
+    Width = 389,
+    Height = 130
 }
 
 local trackedItems = {}
@@ -90,7 +90,7 @@ function FARMTRACKER_INIT_FRAME(frame)
     slotset:EnablePop(0)
     slotset:EnableDrag(0)
     slotset:EnableDrop(0)
-    slotset:SetSlotSize(57, 57)
+    slotset:SetSlotSize(50, 50)
     slotset:SetColRow(7, 1)
     slotset:SetSpc(2, 2)
     slotset:SetSkinName('invenslot2')
@@ -183,7 +183,7 @@ function FarmTracker.ExpandRow(self)
     local slotset = frame:GetChild("slotset");
     AUTO_CAST(slotset);
     slotset:ExpandRow();
-    frame:Resize(frame:GetWidth(), frame:GetHeight() + 59);
+    frame:Resize(frame:GetWidth(), frame:GetHeight() + 52);
     slotset:CreateSlots();
 end
 
@@ -203,7 +203,7 @@ function FarmTracker.DrawSlots(self)
                 local availableCount = slotset:GetSlotCount();
                 if (index >= availableCount) then
                     slotset:ExpandRow();
-                    frame:Resize(frame:GetWidth(), frame:GetHeight() + 59);
+                    frame:Resize(frame:GetWidth(), frame:GetHeight() + 52);
                 end
                 local slot = slotset:GetSlotByIndex(index)
                 local item = session.GetInvItemByType(itemID);
@@ -217,7 +217,7 @@ function FarmTracker.DrawSlots(self)
                     icon:SetTooltipType("wholeitem");
                     icon:SetTooltipArg("", itemID, 0);
                 end
-                local countStr = tostring(count)
+                local countStr = "{s14}" ..tostring(count)
                 if (count > 99999) then
                     countStr = "{s12}" .. countStr
                 end
