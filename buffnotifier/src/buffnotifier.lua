@@ -64,6 +64,8 @@ function BUFFNOTIFIER_ON_INIT(addon, frame)
         BuffNotifier.Settings.Blacklist = {}
     end
     BUFFNOTIFIER_SAVE_SETTINGS()
+    BuffNotifier.removedbuffcount = 0;
+    BuffNotifier.addedbuffcount = 0;
     BuffNotifier.alreadyDisplayedIndex = {};
     BuffNotifier.buffLock = {};
     BuffNotifier.buffBalancer = {};
@@ -237,6 +239,10 @@ function BUFFNOTIFIER_ON_BUFF_REMOVE(frame, msg, buffIndex, buffID)
 end
 
 function BUFFNOTIFIER_DELAYED_BUFF_REMOVE(buffID)
+    local buffFrame = ui.GetFrame('buff')
+    if (buffFrame == nil or buffFrame:IsVisible() == 0) then
+        return
+    end
     if (BuffNotifier.buffLock[buffID] == -1) then
         -- 분명 REMOVE 이벤트인데 REMOVE 가 발생 안하는 경우가 있음... 망겜
         local handle = session.GetMyHandle()
