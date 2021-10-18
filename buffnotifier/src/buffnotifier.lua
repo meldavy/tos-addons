@@ -43,7 +43,8 @@ BuffNotifier.Default = {
 
 BuffNotifier.addedbuffcount = 0;
 BuffNotifier.alreadyDisplayedIndex = {};
-BuffNotifier.currentBuffs = {};
+BuffNotifier.buffLock = {};
+BuffNotifier.buffBalancer = {};
 BuffNotifier.removedbuffcount = 0;
 BuffNotifier.enabled = false;
 
@@ -64,6 +65,8 @@ function BUFFNOTIFIER_ON_INIT(addon, frame)
     end
     BUFFNOTIFIER_SAVE_SETTINGS()
     BuffNotifier.alreadyDisplayedIndex = {};
+    BuffNotifier.buffLock = {};
+    BuffNotifier.buffBalancer = {};
     BuffNotifier.enabled = false;
     addon:RegisterMsg('BUFF_ADD', 'BUFFNOTIFIER_ON_BUFF_ADD');
     addon:RegisterMsg('BUFF_REMOVE', 'BUFFNOTIFIER_ON_BUFF_REMOVE');
@@ -151,7 +154,8 @@ function BUFFNOTIFIER_ON_GAME_START(frame)
     for i = 0, buffCount - 1 do
         local buff = info.GetBuffIndexed(handle, i);
         if buff ~= nil then
-            BuffNotifier.currentBuffs[buff.buffID] = 1
+            BuffNotifier.alreadyDisplayedIndex["REMOVE" .. buff.index] = 1
+            BuffNotifier.buffBalancer[buff.buffID] = 1
         end
     end
     BuffNotifier.enabled = true;
@@ -162,22 +166,43 @@ function BUFFNOTIFIER_ON_BUFF_ADD(frame, msg, buffIndex, buffID)
         return
     end
     local buffCls = GetClassByType('Buff', buffID);
-
     -- 표시 할 버프만 보여줌
     if (BuffNotifier:FilterBuff(buffCls) ~= 1) then
         return
     end
-    local key = "ADD" .. buffID
-    if BuffNotifier.alreadyDisplayedIndex[key] == nil and BuffNotifier.currentBuffs[buffID] == nil then
-        BuffNotifier.alreadyDisplayedIndex[key] = "AlreadyOpen"
-        BuffNotifier.currentBuffs[buffID] = 1
-        BuffNotifier.addedbuffcount = BuffNotifier.addedbuffcount + 1;
-        local frameName = "BUFFNOTIFIER_ADD_"..BuffNotifier.addedbuffcount;
-        ui.DestroyFrame(frameName);
-        local frame = ui.CreateNewFrame("buffnotifier", frameName);
-        frame:SetUserValue("buffID", key)
-        BUFFNOTIFIER_ON_FRAME_INIT(frame, buffCls, 1)
-        BUFFNOTIFIER_BUFF_ADD_OPEN(frame);
+    if (BuffNotifier.buffBalancer[buffID] ~= nil) then
+        -- this is most likely a redraw of an existing buff, we dont' display it.
+        return
+    end
+
+    local key = "ADD" .. buffIndex
+    if BuffNotifier.alreadyDisplayedIndex[key] == nil then
+        -- 중복으로 안보이게
+        BuffNotifier.alreadyDisplayedIndex[key] = 1
+
+        if (BuffNotifier.buffLock[buffID] == nil) then
+            BuffNotifier.buffLock[buffID] = 0
+        end
+        BuffNotifier.buffLock[buffID] = BuffNotifier.buffLock[buffID] + 1
+        -- add
+        ReserveScript(string.format("BUFFNOTIFIER_DELAYED_BUFF_ADD(%d)", buffID), 0.03)
+    end
+end
+
+function BUFFNOTIFIER_DELAYED_BUFF_ADD(buffID)
+    if (BuffNotifier.buffLock[buffID] == 1) then
+        local handle = session.GetMyHandle()
+        local addedBuff = info.GetBuff(handle, buffID);
+        if (addedBuff ~= nil) then
+            local buffCls = GetClassByType('Buff', buffID);
+            BuffNotifier.addedbuffcount = BuffNotifier.addedbuffcount + 1;
+            local frameName = "BUFFNOTIFIER_ADD_"..BuffNotifier.addedbuffcount;
+            ui.DestroyFrame(frameName);
+            local frame = ui.CreateNewFrame("buffnotifier", frameName);
+            BUFFNOTIFIER_ON_FRAME_INIT(frame, buffCls, 1)
+            BUFFNOTIFIER_BUFF_ADD_OPEN(frame);
+        end
+        BuffNotifier.buffLock[buffID] = BuffNotifier.buffLock[buffID] - 1
     end
 end
 
@@ -194,17 +219,38 @@ function BUFFNOTIFIER_ON_BUFF_REMOVE(frame, msg, buffIndex, buffID)
     if (BuffNotifier:FilterBuff(buffCls) ~= 1) then
         return
     end
-    local key = "REMOVE" .. buffID
+
+    BuffNotifier.buffBalancer[buffID] = nil
+
+    local key = "REMOVE" .. buffIndex
     if BuffNotifier.alreadyDisplayedIndex[key] == nil then
-        BuffNotifier.currentBuffs[buffID] = nil
-        BuffNotifier.alreadyDisplayedIndex[key] = "AlreadyOpen"
-        BuffNotifier.removedbuffcount = BuffNotifier.removedbuffcount + 1;
-        local frameName = "BUFFNOTIFIER_REMOVE_"..BuffNotifier.removedbuffcount;
-        ui.DestroyFrame(frameName);
-        local frame = ui.CreateNewFrame("buffnotifier", frameName);
-        frame:SetUserValue("buffID", key)
-        BUFFNOTIFIER_ON_FRAME_INIT(frame, buffCls, 0)
-        BUFFNOTIFIER_BUFF_REMOVE_OPEN(frame);
+        -- 중복으로 안보이게
+        BuffNotifier.alreadyDisplayedIndex[key] = 1
+
+        if (BuffNotifier.buffLock[buffID] == nil) then
+            BuffNotifier.buffLock[buffID] = 0
+        end
+        BuffNotifier.buffLock[buffID] = BuffNotifier.buffLock[buffID] - 1
+        -- remove
+        ReserveScript(string.format("BUFFNOTIFIER_DELAYED_BUFF_REMOVE(%d)", buffID), 0.03)
+    end
+end
+
+function BUFFNOTIFIER_DELAYED_BUFF_REMOVE(buffID)
+    if (BuffNotifier.buffLock[buffID] == -1) then
+        -- 분명 REMOVE 이벤트인데 REMOVE 가 발생 안하는 경우가 있음... 망겜
+        local handle = session.GetMyHandle()
+        local removedBuff = info.GetBuff(handle, buffID);
+        if (removedBuff == nil) then
+            local buffCls = GetClassByType('Buff', buffID);
+            BuffNotifier.removedbuffcount = BuffNotifier.removedbuffcount + 1;
+            local frameName = "BUFFNOTIFIER_REMOVE_"..BuffNotifier.removedbuffcount;
+            ui.DestroyFrame(frameName);
+            local frame = ui.CreateNewFrame("buffnotifier", frameName);
+            BUFFNOTIFIER_ON_FRAME_INIT(frame, buffCls, 0)
+            BUFFNOTIFIER_BUFF_REMOVE_OPEN(frame);
+        end
+        BuffNotifier.buffLock[buffID] = BuffNotifier.buffLock[buffID] + 1
     end
 end
 
@@ -214,7 +260,6 @@ end
 
 function BUFFNOTIFIER_CLOSE(frame)
     local key = frame:GetUserValue("buffID")
-    BuffNotifier.alreadyDisplayedIndex[key] = nil
     ui.DestroyFrame(frame:GetName());
 end
 
