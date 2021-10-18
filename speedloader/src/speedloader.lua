@@ -73,9 +73,7 @@ end
 
 function SPEEDLOADER_ON_BUFF_REMOVE(frame, msg, buffIndex, buffType)
     if (buffType == SpeedLoader.BUFF_ID) then
-        local myHandle = session.GetMyHandle();
-        local actor = world.GetActor(myHandle)
-        effect.DetachActorEffect(actor, "F_pattern025_loop", 0.5);
+        SpeedLoader:ProcessSpeedLoader(frame)
         frame:ShowWindow(0)
     end
 end
@@ -152,27 +150,43 @@ end
 
 function SpeedLoader.ProcessSpeedLoader(self, frame)
     local myHandle = session.GetMyHandle();
+    local actor = world.GetActor(myHandle)
     local buff = info.GetBuff(myHandle, SpeedLoader.BUFF_ID)
+    local effectName = "F_pattern025_loop"
+    local gauge = frame:GetChildRecursively('reloadGauge');
+    AUTO_CAST(gauge)
     if (buff ~= nil and buff:GetHandle() == session.GetMyHandle()) then
-        local gauge = frame:GetChildRecursively('reloadGauge');
-        AUTO_CAST(gauge)
         gauge:SetPoint(buff.over, 10);
-        if (IsBattleState(GetMyPCObject()) == 0) then
-            -- 전투중일때만 눈뽕 표시
-            return
-        end
-        local actor = world.GetActor(myHandle)
         if (buff.over == 10) then
-            effect.DetachActorEffect(actor, "F_pattern025_loop", 0);
-            effect.AddActorEffectByOffset(actor, "F_pattern025_loop", 4, "MID", true, true);
+            if (IsBattleState(GetMyPCObject()) == 1) then
+                -- 전투중일때만 눈뽕 표시
+                effect.DetachActorEffect(actor, "F_archere_magicarrow_gruond_loop2", 0.1);
+                effect.AddActorEffectByOffset(actor, "F_archere_magicarrow_gruond_loop2", 8, "MID", true, true);
+                effect.DetachActorEffect(actor, effectName, 0.2);
+                effect.AddActorEffectByOffset(actor, effectName, 2.2, "MID", true, true);
+                ReserveScript("SPEEDLOADER_REMOVE_ACTOR_EFFECT()", 1)
+                imcSound.PlaySoundEvent('sys_tp_box_3');
+            end
             gauge:SetSkinName("speedloader_gauge_green");
-            imcSound.PlaySoundEvent('sys_tp_box_3');
         elseif (buff.over == 9) then
-            effect.AddActorEffectByOffset(actor, "F_pattern025_loop", 2, "MID", true, true);
+            if (IsBattleState(GetMyPCObject()) == 1) then
+                effect.AddActorEffectByOffset(actor, "F_archere_magicarrow_gruond_loop2", 4, "MID", true, true);
+                effect.AddActorEffectByOffset(actor, effectName, 1.2, "MID", true, true);
+            end
             gauge:SetSkinName("speedloader_gauge_orange");
         else
-            effect.DetachActorEffect(actor, "F_pattern025_loop", 0.5);
             gauge:SetSkinName("speedloader_gauge_yellow");
         end
+    elseif (buff == nil) then
+        effect.DetachActorEffect(actor, "F_archere_magicarrow_gruond_loop2", 0.2);
+        effect.DetachActorEffect(actor, effectName, 0.2);
+        gauge:SetPoint(0, 10);
+        gauge:SetSkinName("speedloader_gauge_yellow");
     end
+end
+
+function SPEEDLOADER_REMOVE_ACTOR_EFFECT()
+    local myHandle = session.GetMyHandle();
+    local actor = world.GetActor(myHandle)
+    effect.DetachActorEffect(actor, "F_pattern025_loop", 0.2);
 end
