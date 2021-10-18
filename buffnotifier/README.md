@@ -32,5 +32,6 @@ You can use my blacklist setting: https://github.com/meldavy/tos-addons/blob/mai
 
 ![image](https://user-images.githubusercontent.com/12102540/136193948-eaf2fc8a-a133-4bc7-889f-6ba1c3a2e833.png)
 
+* v1.0.5 - Bugfixes
 * v1.0.2 - Add blacklist feature
 * v1.0.1 - Enable repositioning
