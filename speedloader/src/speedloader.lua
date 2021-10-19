@@ -18,11 +18,12 @@ SpeedLoader.Settings = {
     Position = {
         X = 400,
         Y = 400
-    }
+    },
+    ShowVisual = 1
 };
 
 SpeedLoader.Default = {
-    Height = 60,
+    Height = 70,
     Width = 233,
     IsVisible = 0,
     Movable = 1,
@@ -136,6 +137,23 @@ function SPEEDLOADER_ON_FRAME_INIT(frame)
     local infoText = frame:CreateOrGetControl("richtext", "infoText", 200, 20, ui.LEFT, ui.TOP, 44, 0, 0, 0);
     infoText:SetText("{@st42}리로드{/}")
     infoText:EnableHitTest(0)
+    local showVisual = frame:CreateOrGetControl('checkbox', "showVisual", 200, 20, ui.LEFT, ui.BOTTOM, 44, 0, 0, 0);
+    AUTO_CAST(showVisual);
+    showVisual:SetCheck(SpeedLoader.Settings.ShowVisual);
+    showVisual:SetEventScript(ui.LBUTTONDOWN, "SPEEDLOADER_TOGGLE_CHECK");
+    showVisual:SetText("{@st42}Visual Effect")
+end
+
+function SPEEDLOADER_TOGGLE_CHECK(frame, ctrl)
+    AUTO_CAST(ctrl)
+    SpeedLoader.Settings.ShowVisual = ctrl:IsChecked()
+    if (ctrl:IsChecked() == 0) then
+        local myHandle = session.GetMyHandle();
+        local actor = world.GetActor(myHandle)
+        effect.DetachActorEffect(actor, "F_archere_magicarrow_gruond_loop2", 0.2);
+        effect.DetachActorEffect(actor, "F_pattern025_loop", 0.2);
+    end
+    SPEEDLOADER_SAVE_SETTINGS()
 end
 
 function SPEEDLOADER_END_DRAG(frame, ctrl)
@@ -160,16 +178,18 @@ function SpeedLoader.ProcessSpeedLoader(self, frame)
         if (buff.over == 10) then
             if (IsBattleState(GetMyPCObject()) == 1) then
                 -- 전투중일때만 눈뽕 표시
-                effect.DetachActorEffect(actor, "F_archere_magicarrow_gruond_loop2", 0.1);
-                effect.AddActorEffectByOffset(actor, "F_archere_magicarrow_gruond_loop2", 8, "MID", true, true);
-                effect.DetachActorEffect(actor, effectName, 0.2);
-                effect.AddActorEffectByOffset(actor, effectName, 2.2, "MID", true, true);
-                ReserveScript("SPEEDLOADER_REMOVE_ACTOR_EFFECT()", 1)
+                if (SpeedLoader.Settings.ShowVisual == 1) then
+                    effect.DetachActorEffect(actor, "F_archere_magicarrow_gruond_loop2", 0.1);
+                    effect.AddActorEffectByOffset(actor, "F_archere_magicarrow_gruond_loop2", 8, "MID", true, true);
+                    effect.DetachActorEffect(actor, effectName, 0.2);
+                    effect.AddActorEffectByOffset(actor, effectName, 2.2, "MID", true, true);
+                    ReserveScript("SPEEDLOADER_REMOVE_ACTOR_EFFECT()", 1)
+                end
                 imcSound.PlaySoundEvent('sys_tp_box_3');
             end
             gauge:SetSkinName("speedloader_gauge_green");
         elseif (buff.over == 9) then
-            if (IsBattleState(GetMyPCObject()) == 1) then
+            if (SpeedLoader.Settings.ShowVisual == 1 and IsBattleState(GetMyPCObject()) == 1) then
                 effect.AddActorEffectByOffset(actor, "F_archere_magicarrow_gruond_loop2", 4, "MID", true, true);
                 effect.AddActorEffectByOffset(actor, effectName, 1.2, "MID", true, true);
             end
