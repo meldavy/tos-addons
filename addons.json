@@ -58,8 +58,8 @@
         "name": "PersistentCamcon",
         "file": "persistentcamcon",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "initial",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "persistentcamcon-v1.0.1",
         "unicode": "📖",
         "description": "Camcon but saves Zoom value per each map. Z값 저장되는 캠컨",
         "tags": [
