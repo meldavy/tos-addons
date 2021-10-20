@@ -96,7 +96,7 @@ function PERSISTENTCAMCON_ON_INIT(addon, frame)
     -- ウィンドウサイズ再定義
     PERSISTENTCAMCON_WINDOW_INIT();
 
-    addon:RegisterMsg('GAME_START_3SEC', 'PERSISTENTCAMCON_GAME_START');
+    addon:RegisterMsg('GAME_START', 'PERSISTENTCAMCON_GAME_START');
 end
 
 -- 맵 이동시
@@ -104,7 +104,10 @@ function PERSISTENTCAMCON_GAME_START(frame)
     local mapId = session.GetMapID();
     local mapZoomValue = g.settings.maps[tostring(mapId)];
     if (mapZoomValue ~= nil) then
-        camera.CustomZoom(tonumber(mapZoomValue));
+        local scrZ = frame:CreateOrGetControl("slidebar", "n_scrZ", 120, 94, 180, 30);
+        tolua.cast(scrZ, 'ui::CSlideBar');
+        scrZ:SetLevel(tonumber(mapZoomValue));
+        ReserveScript("PERSISTENTCAMCON_CAMERA_UPDATE_Z()", 0.5)
     end
 end
 
@@ -280,7 +283,7 @@ function PERSISTENTCAMCON_CAMERA_UPDATE_Z()
     labelZ:SetText("Z값("..(g.settings.campos.z).."):");
 
     -- UPDATE
-    camera.CustomZoom(g.settings.campos.z);
+    camera.CustomZoom(g.settings.campos.z, 0);
 
     -- 맵 저장
     local mapId = session.GetMapID();
