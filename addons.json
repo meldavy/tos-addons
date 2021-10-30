@@ -206,8 +206,8 @@
         "name": "SpeedLoader",
         "file": "speedloader",
         "extension": "ipf",
-        "fileVersion": "v1.0.3",
-        "releaseTag": "speedloader-v1.0.3",
+        "fileVersion": "v1.0.4",
+        "releaseTag": "speedloader-v1.0.4",
         "unicode": "📖",
         "description": "Speedloader sheriff addon. 셰리프 스피드로더 애드온.",
         "tags": [
