@@ -31,6 +31,7 @@ SpeedLoader.Default = {
 };
 
 local previousStackCount = 0
+local SpeedLoaderFullStackTime = 0;
 
 function SPEEDLOADER_ON_INIT(addon, frame)
     SpeedLoader.addon = addon;
@@ -46,6 +47,8 @@ function SPEEDLOADER_ON_INIT(addon, frame)
     end
     -- initialize frame
     SPEEDLOADER_ON_FRAME_INIT(frame)
+
+    SpeedLoaderFullStackTime = 0;  -- reset on map move
 
     addon:RegisterMsg('BUFF_UPDATE', 'SPEEDLOADER_ON_BUFF_UPDATE');
     addon:RegisterMsg('BUFF_ADD', 'SPEEDLOADER_ON_BUFF_ADD');
@@ -177,6 +180,10 @@ function SpeedLoader.ProcessSpeedLoader(self, frame)
         gauge:SetPoint(buff.over, 10);
         if (buff.over == 10) then
             if (IsBattleState(GetMyPCObject()) == 1) then
+                if (SpeedLoaderFullStackTime == 0) then
+                    SpeedLoaderFullStackTime = imcTime.GetAppTime()
+                    frame:RunUpdateScript("SPEEDLOADER_DRAW_FULL_STACK_GAUGE", 0.1)
+                end
                 -- 전투중일때만 눈뽕 표시
                 if (SpeedLoader.Settings.ShowVisual == 1) then
                     effect.DetachActorEffect(actor, "F_archere_magicarrow_gruond_loop2", 0.1);
@@ -189,12 +196,16 @@ function SpeedLoader.ProcessSpeedLoader(self, frame)
             end
             gauge:SetSkinName("speedloader_gauge_green");
         elseif (buff.over == 9) then
+            SpeedLoaderFullStackTime = 0
+            frame:StopUpdateScript("SPEEDLOADER_DRAW_FULL_STACK_GAUGE")
             if (SpeedLoader.Settings.ShowVisual == 1 and IsBattleState(GetMyPCObject()) == 1) then
                 effect.AddActorEffectByOffset(actor, "F_archere_magicarrow_gruond_loop2", 4, "MID", true, true);
                 effect.AddActorEffectByOffset(actor, effectName, 1.2, "MID", true, true);
             end
             gauge:SetSkinName("speedloader_gauge_orange");
         else
+            SpeedLoaderFullStackTime = 0
+            frame:StopUpdateScript("SPEEDLOADER_DRAW_FULL_STACK_GAUGE")
             gauge:SetSkinName("speedloader_gauge_yellow");
         end
     elseif (buff == nil) then
@@ -205,7 +216,26 @@ function SpeedLoader.ProcessSpeedLoader(self, frame)
     end
 end
 
-function SPEEDLOADER_REMOVE_ACTOR_EFFECT()
+function SPEEDLOADER_DRAW_FULL_STACK_GAUGE(frame)
+    local myHandle = session.GetMyHandle();
+    local buff = info.GetBuff(myHandle, SpeedLoader.BUFF_ID)
+    if (buff.over == 10 and SpeedLoaderFullStackTime ~= 0) then
+        local curTime = imcTime.GetAppTime()
+        local timeDiff = curTime - SpeedLoaderFullStackTime
+        if (timeDiff > 5) then
+            SpeedLoaderFullStackTime = curTime
+        end
+        local gauge = frame:GetChildRecursively('reloadGauge');
+        AUTO_CAST(gauge);
+        gauge:SetPoint(5 - (curTime - SpeedLoaderFullStackTime), 5);
+        return 1;
+    else
+        SpeedLoaderFullStackTime = 0
+        return 0;
+    end
+end
+
+function SPEEDLOADER_REMOVE_ACTOR_EFFECT(frame)
     local myHandle = session.GetMyHandle();
     local actor = world.GetActor(myHandle)
     effect.DetachActorEffect(actor, "F_pattern025_loop", 0.2);
