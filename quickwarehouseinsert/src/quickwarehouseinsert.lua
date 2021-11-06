@@ -112,11 +112,18 @@ function QuickWarehouseInsert.PutAccountItemToWarehouseByInvItem(frame, invItem,
                     maxCnt = 0;
                 end
             end
+            -- 스택형 아이템
             if invItem.count > 1 or geItemTable.IsStack(obj.ClassID) == 1 then
                 local iesId = invItem:GetIESID();
                 local tempFrame = ui.GetFrame("quickwarehouseinsert");
                 tempFrame:SetUserValue("ArgString", tostring(iesId));
                 EXEC_PUT_ITEM_TO_ACCOUNT_WAREHOUSE(frame, maxCnt, tempFrame);
+                return
+            end
+            -- 기간제 아이템
+            if invItem.hasLifeTime == true then
+                local iesId = invItem:GetIESID();
+                PUT_ACCOUNT_ITEM_TO_WAREHOUSE_BY_INVITEM_MSG_YESSCP(iesId, tostring(maxCnt))
                 return
             end
         end
