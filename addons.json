@@ -213,5 +213,17 @@
         "tags": [
             "ui"
         ]
+    },
+    {
+        "name": "SoulMaster",
+        "file": "soulmaster",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "soulmaster-v1.0.0",
+        "unicode": "📖",
+        "description": "SoulMaster Sadhu addon. 사두 유체 숙련 애드온.",
+        "tags": [
+            "ui"
+        ]
     }
 ]
