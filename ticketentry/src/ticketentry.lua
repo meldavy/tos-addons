@@ -22,17 +22,20 @@ TicketEntry.TICKETS = {
     [11030134] = 635, -- 마켓거래 길티네 입장권
     [11030146] = 635, -- 거불 길티네 입장권
     [10000472] = 635, -- 이벤트 길티네 입장권
+    [10000474] = 640, -- 이벤트 성물하드 입장권
+    [11030129] = 640, -- 마켓거래 성물하드 입장권
+    [11030114] = 640, -- 거불 성물하드 입장권
+    [11030090] = 640, -- 7일 기간제 성물하드 입장권
+    [689002] = 640,   -- ? 성물하드 입장권
+}
+
+TicketEntry.NORMAL_MYTHIC_TICKETS = {
     [11030084] = 636, -- 7일 기간제 성물노말 입장권
     [11030117] = 636, -- 마켓거래 성물노말 입장권
     [11030144] = 636, -- 거불 성물노말 입장권
     [10000450] = 636, -- 전야제 성물노말 입장권
     [10000458] = 636, -- 달토끼 성물노말 입장권
     [10000473] = 636, -- 이벤트 성물노말 입장권
-    [10000474] = 640, -- 이벤트 성물하드 입장권
-    [11030129] = 640, -- 마켓거래 성물하드 입장권
-    [11030114] = 640, -- 거불 성물하드 입장권
-    [11030090] = 640, -- 7일 기간제 성물하드 입장권
-    [689002] = 640,   -- ? 성물하드 입장권
 }
 
 TicketEntry.CHALLENGE_TICKETS = {
@@ -127,10 +130,11 @@ function TicketEntry.InventoryRBDCItemUse(frame, object, argStr, argNum)
             -- 성소, 기도소 입장권이면 자동매칭 창 열어줌
             ReqRaidAutoUIOpen(contentID);
             return;
-        elseif (TicketEntry:IsChallengeTicket(invItem) == 1) then
+        elseif (TicketEntry:IsChallengeTicket(invItem) ~= nil) then
             -- 첼초권
             local frame = ui.GetFrame("ticketentry");
-            frame:SetPos(mouse.GetX() - 105, mouse.GetY() - 35);
+            frame:RemoveAllChild();
+            frame:SetPos(mouse.GetX() - 195, mouse.GetY() - 35);
             frame:Resize(220, 70);
             local chal1 = frame:CreateOrGetControl("button", "chal1", 66, 66, ui.LEFT, ui.TOP, 2, 2, 0, 0);
             chal1:SetText("Lv 400{nl}1인 입장")
@@ -149,7 +153,25 @@ function TicketEntry.InventoryRBDCItemUse(frame, object, argStr, argNum)
 
             frame:ShowWindow(1);
             return;
-        elseif (TicketEntry:IsDivisionTicket(invItem) == 1) then
+        elseif (TicketEntry:IsNormalMythicTicket(invItem) ~= nil) then
+            -- 성물노말
+            local frame = ui.GetFrame("ticketentry");
+            frame:RemoveAllChild();
+            frame:SetPos(mouse.GetX() - 125, mouse.GetY() - 35);
+            frame:Resize(150, 70);
+            local chal1 = frame:CreateOrGetControl("button", "solo", 66, 66, ui.LEFT, ui.TOP, 2, 2, 0, 0);
+            chal1:SetText("1인 입장")
+            chal1:SetEventScript(ui.LBUTTONUP, "TICKET_ENTRY_INDUN_ENTER");
+            chal1:SetEventScriptArgNumber(ui.LBUTTONUP, 658);
+
+            local chal2 = frame:CreateOrGetControl("button", "party", 66, 66, ui.LEFT, ui.TOP, 74, 2, 0, 0);
+            chal2:SetText("매칭 입장")
+            chal2:SetEventScript(ui.LBUTTONUP, "TICKET_ENTRY_INDUN_ENTER");
+            chal2:SetEventScriptArgNumber(ui.LBUTTONUP, 636);
+
+            frame:ShowWindow(1);
+            return;
+        elseif (TicketEntry:IsDivisionTicket(invItem) ~= nil) then
             ReqChallengeAutoUIOpen(647);
             return;
         elseif (TicketEntry:IsSoloDungeonTicket(invItem) ~= nil) then
@@ -181,6 +203,12 @@ function TICKET_ENTRY_CHALLENGE_ENTER(frame, ctrl, argStr, argNum)
     ReqChallengeAutoUIOpen(contentID);
 end
 
+function TICKET_ENTRY_INDUN_ENTER(frame, ctrl, argStr, argNum)
+    frame:ShowWindow(0);
+    local contentID = argNum
+    ReqRaidAutoUIOpen(contentID);
+end
+
 -- 베르니케
 function TicketEntry.IsSoloDungeonTicket(self, invItem)
     local cls = invItem.type
@@ -197,6 +225,12 @@ end
 function TicketEntry.IsChallengeTicket(self, invItem)
     local cls = invItem.type
     return TicketEntry.CHALLENGE_TICKETS[cls]
+end
+
+-- 성물노말
+function TicketEntry.IsNormalMythicTicket(self, invItem)
+    local cls = invItem.type
+    return TicketEntry.NORMAL_MYTHIC_TICKETS[cls]
 end
 
 -- 입장권
