@@ -47,7 +47,6 @@ function AUTOGODDESSPROTECTION_ON_INIT(addon, frame)
         state = "ON";
     end
     CHAT_SYSTEM(string.format(AutoGoddessProtection:GetTranslatedString("message"), state));
-    ui.SysMsg(string.format(AutoGoddessProtection:GetTranslatedString("message"), state));
     -- initialize frame
     AUTOGODDESSPROTECTION_ON_FRAME_INIT(frame);
     addon:RegisterMsg('FIELD_BOSS_WORLD_EVENT_START', 'AUTOGODDESSPROTECTION_START');
