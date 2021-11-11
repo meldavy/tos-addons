@@ -88,6 +88,11 @@ end
 
 function AUTO_GODDESS_PROTECTION_END(frame)
     GODPROTECTION_CLOSE();
+    -- turn off auto
+    AutoGoddessProtection.Settings.Enabled = false;
+    local state = "OFF";
+    ui.SysMsg(string.format(AutoGoddessProtection:GetTranslatedString("message"), state));
+    acutil.saveJSON(AutoGoddessProtection.SettingsFileLoc, AutoGoddessProtection.Settings);
 end
 
 function AUTO_GODDESS_PROTECTION_ON_FRAME_INIT(frame)
