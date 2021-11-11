@@ -30,7 +30,7 @@ AutoGoddessProtection.Default = {
     Enabled = 1, -- Hittest
 };
 
-function AUTO_GODDESS_PROTECTION_ON_INIT(addon, frame)
+function AUTOGODDESSPROTECTION_ON_INIT(addon, frame)
     AutoGoddessProtection.addon = addon;
     AutoGoddessProtection.frame = frame;
     -- load settings
@@ -49,13 +49,13 @@ function AUTO_GODDESS_PROTECTION_ON_INIT(addon, frame)
     CHAT_SYSTEM(string.format(AutoGoddessProtection:GetTranslatedString("message"), state));
     ui.SysMsg(string.format(AutoGoddessProtection:GetTranslatedString("message"), state));
     -- initialize frame
-    AUTO_GODDESS_PROTECTION_ON_FRAME_INIT(frame);
-    addon:RegisterMsg('FIELD_BOSS_WORLD_EVENT_START', 'AUTO_GODDESS_PROTECTION_START');
-    addon:RegisterMsg('FIELD_BOSS_WORLD_EVENT_END', 'AUTO_GODDESS_PROTECTION_END');
-    acutil.slashCommand('/afk', AUTO_GODDESS_PROTECTION_PROCESS_COMMAND)
+    AUTOGODDESSPROTECTION_ON_FRAME_INIT(frame);
+    addon:RegisterMsg('FIELD_BOSS_WORLD_EVENT_START', 'AUTOGODDESSPROTECTION_START');
+    addon:RegisterMsg('FIELD_BOSS_WORLD_EVENT_END', 'AUTOGODDESSPROTECTION_END');
+    acutil.slashCommand('/afk', AUTOGODDESSPROTECTION_PROCESS_COMMAND)
 end
 
-function AUTO_GODDESS_PROTECTION_PROCESS_COMMAND()
+function AUTOGODDESSPROTECTION_PROCESS_COMMAND()
     if (AutoGoddessProtection.Settings.Enabled == true) then
         AutoGoddessProtection.Settings.Enabled = false;
     else
@@ -69,12 +69,12 @@ function AUTO_GODDESS_PROTECTION_PROCESS_COMMAND()
     acutil.saveJSON(AutoGoddessProtection.SettingsFileLoc, AutoGoddessProtection.Settings);
 end
 
-function AUTO_GODDESS_PROTECTION_START(frame)
+function AUTOGODDESSPROTECTION_START(frame)
     ReserveScript("GODPROTECTION_DO_OPEN()", 2); -- open god protection after a delay to complete any pre-loading
-    ReserveScript("AUTO_GODDESS_PROTECTION_RUN()", 3); -- invoke
+    ReserveScript("AUTOGODDESSPROTECTION_RUN()", 3); -- invoke
 end
 
-function AUTO_GODDESS_PROTECTION_RUN()
+function AUTOGODDESSPROTECTION_RUN()
     local frame = ui.GetFrame("godprotection");
     local edit = GET_CHILD_RECURSIVELY(frame, "auto_edit");
     AUTO_CAST(edit);
@@ -86,7 +86,7 @@ function AUTO_GODDESS_PROTECTION_RUN()
     GODPROTECTION_AUTO_START_BTN_CLICK(parent, btn);
 end
 
-function AUTO_GODDESS_PROTECTION_END(frame)
+function AUTOGODDESSPROTECTION_END(frame)
     GODPROTECTION_CLOSE();
     -- turn off auto
     AutoGoddessProtection.Settings.Enabled = false;
@@ -95,11 +95,11 @@ function AUTO_GODDESS_PROTECTION_END(frame)
     acutil.saveJSON(AutoGoddessProtection.SettingsFileLoc, AutoGoddessProtection.Settings);
 end
 
-function AUTO_GODDESS_PROTECTION_ON_FRAME_INIT(frame)
+function AUTOGODDESSPROTECTION_ON_FRAME_INIT(frame)
     -- enable frame reposition through drag and move
     frame:EnableMove(AutoGoddessProtection.Default.Movable);
     frame:EnableHitTest(AutoGoddessProtection.Default.Enabled);
-    frame:SetEventScript(ui.LBUTTONUP, "AUTO_GODDESS_PROTECTION_END_DRAG");
+    frame:SetEventScript(ui.LBUTTONUP, "AUTOGODDESSPROTECTION_END_DRAG");
 
     -- draw the frame
     frame:SetSkinName('chat_window');
@@ -113,13 +113,13 @@ function AUTO_GODDESS_PROTECTION_ON_FRAME_INIT(frame)
     frame:ShowWindow(AutoGoddessProtection.Default.IsVisible);
 end
 
-function AUTO_GODDESS_PROTECTION_END_DRAG(frame, ctrl)
+function AUTOGODDESSPROTECTION_END_DRAG(frame, ctrl)
     AutoGoddessProtection.Settings.Position.X = AutoGoddessProtection.frame:GetX();
     AutoGoddessProtection.Settings.Position.Y = AutoGoddessProtection.frame:GetY();
-    AUTO_GODDESS_PROTECTION_SAVE_SETTINGS();
+    AUTOGODDESSPROTECTION_SAVE_SETTINGS();
 end
 
-function AUTO_GODDESS_PROTECTION_SAVE_SETTINGS()
+function AUTOGODDESSPROTECTION_SAVE_SETTINGS()
     acutil.saveJSON(AutoGoddessProtection.SettingsFileLoc, AutoGoddessProtection.Settings);
 end
 
