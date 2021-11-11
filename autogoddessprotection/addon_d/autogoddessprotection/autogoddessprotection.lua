@@ -86,7 +86,8 @@ function AUTOGODDESSPROTECTION_RUN()
 end
 
 function AUTOGODDESSPROTECTION_END(frame)
-    GODPROTECTION_CLOSE();
+    local frame = ui.GetFrame("godprotection");
+    GODPROTECTION_CLOSE(frame);
     -- turn off auto
     AutoGoddessProtection.Settings.Enabled = false;
     local state = "OFF";
