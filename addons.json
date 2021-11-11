@@ -230,8 +230,8 @@
         "name": "AutoGoddessProtection",
         "file": "autogoddessprotection",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "autogoddessprotection-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "autogoddessprotection-v1.0.1",
         "unicode": "📖",
         "description": "Auto Goddess Protection addon. 자동 여신의 가호 봉헌 애드온.",
         "tags": [
