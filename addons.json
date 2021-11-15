@@ -238,4 +238,17 @@
             "ui"
         ]
     }
+,
+    {
+        "name": "QuickDigest",
+        "file": "quickdigest",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "quickdigest-v1.0.0",
+        "unicode": "📖",
+        "description": "Automatically remove squire buff when eating food. 밥차 먹을때 기존 버프를 자동으로 지워줘요.",
+        "tags": [
+            "ui"
+        ]
+    }
 ]
