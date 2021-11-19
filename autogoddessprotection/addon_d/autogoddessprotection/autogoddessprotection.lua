@@ -69,8 +69,10 @@ function AUTOGODDESSPROTECTION_PROCESS_COMMAND()
 end
 
 function AUTOGODDESSPROTECTION_START(frame)
-    ReserveScript("GODPROTECTION_DO_OPEN()", 2); -- open god protection after a delay to complete any pre-loading
-    ReserveScript("AUTOGODDESSPROTECTION_RUN()", 3); -- invoke
+    if (AutoGoddessProtection.Settings.Enabled == true) then
+        ReserveScript("GODPROTECTION_DO_OPEN()", 2); -- open god protection after a delay to complete any pre-loading
+        ReserveScript("AUTOGODDESSPROTECTION_RUN()", 3); -- invoke
+    end
 end
 
 function AUTOGODDESSPROTECTION_RUN()
