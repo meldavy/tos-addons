@@ -32,8 +32,8 @@
         "name": "BetterCrossguard",
         "file": "bettercrossguard",
         "extension": "ipf",
-        "fileVersion": "v1.0.5",
-        "releaseTag": "bettercrossguard-v1.0.5",
+        "fileVersion": "v1.0.6",
+        "releaseTag": "bettercrossguard-v1.0.6",
         "unicode": "📖",
         "description": "Makes Crossguard effect more visible. 크로스가드",
         "tags": [
