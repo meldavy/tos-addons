@@ -13,12 +13,14 @@ local acutil = require('acutil')
 
 BetterCrossguard.CROSSGUARD_ID = 150
 BetterCrossguard.CROSSGUARD_DEBUFF_ID = 203
+BetterCrossguard.CROSSGUARD_BUFF_ID = 532
 
 function BETTERCROSSGUARD_ON_INIT(addon, frame)
     BetterCrossguard.addon = addon;
     BetterCrossguard.frame = frame;
 
     addon:RegisterMsg('TARGET_BUFF_ADD', 'CROSSGUARD_ON_TARGET_BUFF_ADD');
+    addon:RegisterMsg('BUFF_ADD', 'CROSSGUARD_ON_BUFF_ADD');
     addon:RegisterMsg('TARGET_BUFF_UPDATE', 'CROSSGUARD_ON_TARGET_BUFF_UPDATE');
 end
 
@@ -42,6 +44,16 @@ function CROSSGUARD_ON_TARGET_BUFF_ADD(frame, msg, argStr, argNum)
     end
 end
 
+function CROSSGUARD_ON_BUFF_ADD(frame, msg, argStr, argNum)
+    if (BetterCrossguard:IsCrossguard()) then
+        local buffIndex = 0
+        if (argStr ~= 'None') then
+            buffIndex = tonumber(argStr)
+        end
+        BetterCrossguard:PlayEffectOnCrossguard(argNum, buffIndex)
+    end
+end
+
 -- 크가 상태 확인
 function BetterCrossguard.IsCrossguard(self)
     local handle = session.GetMyHandle()
@@ -50,18 +62,26 @@ function BetterCrossguard.IsCrossguard(self)
 end
 
 function BetterCrossguard.PlayEffectOnCrossguard(self, argNum, buffIndex)
-    if argNum == self.CROSSGUARD_DEBUFF_ID then
+    if argNum == self.CROSSGUARD_DEBUFF_ID or argNum == self.CROSSGUARD_BUFF_ID then
         local myHandle = session.GetMyHandle()
         local actor = world.GetActor(myHandle)
         local targetHandle = session.GetTargetHandle()
         local target = world.GetActor(targetHandle)
         local crossguardDebuff = info.GetBuff(targetHandle, argNum, buffIndex);
-        if (crossguardDebuff ~= nil) then
+        local crossguardBuff = info.GetBuff(myHandle, argNum)
+        if (crossguardDebuff ~= nil or crossguardBuff ~= nil) then
+            if (crossguardBuff ~= nil) then
+                effect.PlayActorEffect(actor, 'F_warrior_shield002', 'Dummy_bufficon', 2.0, 10.0)
+                effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
+                imcSound.PlaySoundEvent('sys_tp_box_3');
+                return
+            end
             local casterHandle = crossguardDebuff:GetHandle();
             if (casterHandle == myHandle) then
                 effect.PlayActorEffect(actor, 'F_warrior_shield002', 'Dummy_bufficon', 2.0, 10.0)
                 effect.PlayActorEffect(actor, "F_spin019_1", 'None', 1.0, 4.0)
                 imcSound.PlaySoundEvent('sys_tp_box_3');
+                return
             end
         end
     end
