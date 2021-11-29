@@ -254,8 +254,8 @@
         "name": "SummonTracker",
         "file": "summontracker",
         "extension": "ipf",
-        "fileVersion": "v1.0.0",
-        "releaseTag": "summontracker-v1.0.0",
+        "fileVersion": "v1.0.1",
+        "releaseTag": "summontracker-v1.0.1",
         "unicode": "📖",
         "description": "Shows your summons on top of your character. 캐릭 체력바 위에 소환수 설치물 표시해줘요.",
         "tags": [
