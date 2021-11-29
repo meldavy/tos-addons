@@ -176,7 +176,11 @@ function SUMMONTRACKER_ON_INIT(addon, frame)
     activeHandles = {}
     -- initialize frame
     SUMMONTRACKER_ON_FRAME_INIT(frame)
-    frame:RunUpdateScript("SUMMONTRACKER_ON_TICK", 0.5)
+    addon:RegisterMsg('GAME_START', 'SUMMONTRACKER_ON_GAME_START');
+end
+
+function SUMMONTRACKER_ON_GAME_START()
+    SummonTracker.frame:RunUpdateScript("SUMMONTRACKER_ON_TICK", 0.5)
 end
 
 function SUMMONTRACKER_ON_FRAME_INIT(frame)
@@ -238,6 +242,8 @@ function SUMMONTRACKER_INVALIDATE()
         local offsetY = -75
         summontrackerframe:ShowWindow(1)
         FRAME_AUTO_POS_TO_OBJ(summontrackerframe, session.GetMyHandle(), -summontrackerframe:GetWidth() / 2, offsetY, 0, 1, 1)
+    elseif (summontrackerframe:IsVisible() == 0) then
+        summontrackerframe:ShowWindow(1)
     end
     -- invalidate icons
     local summonTypes = {}
@@ -289,7 +295,6 @@ function SUMMONTRACKER_ON_TICK(frame)
         local handle = GetHandle(list[i])
         local className = list[i].ClassName
         local ownerHandle = info.GetOwner(handle)
-
         if (SummonTracker.SummonClasses[className] ~= nil or SummonTracker.TextStartsWith(className, "pc_summon_Legend_card") == true or SummonTracker.TextStartsWith(className, "ancient") == true) then
             -- is a tracked summon
             if (myHandle == ownerHandle) then
@@ -307,11 +312,13 @@ function SUMMONTRACKER_ON_TICK(frame)
                     local name = summonframe:CreateOrGetControl("richtext", "name", 200, 40, ui.CENTER_HORZ, ui.TOP, 0, 0, 0, 0)
                     name:SetFontName("white_16_ol")
                     name:SetText(className)
-                    local offsetY = -10
                     summonframe:ShowWindow(1)
-                    SUMMONTRACKER_INVALIDATE()
-                    FRAME_AUTO_POS_TO_OBJ(summonframe, handle, -summonframe:GetWidth() / 2, offsetY, 3, 1)
+                elseif (summonframe:IsVisible() == 0) then
+                    summonframe:ShowWindow(1)
                 end
+                local offsetY = -10
+                SUMMONTRACKER_INVALIDATE()
+                FRAME_AUTO_POS_TO_OBJ(summonframe, handle, -summonframe:GetWidth() / 2, offsetY, 3, 1)
             end
         end
     end
