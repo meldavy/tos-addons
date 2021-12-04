@@ -84,8 +84,8 @@
         "name": "DungeonRPCharger",
         "file": "dungeonrpcharger",
         "extension": "ipf",
-        "fileVersion": "v1.0.1",
-        "releaseTag": "dungeonrpcharger-v1.0.1",
+        "fileVersion": "v1.0.2",
+        "releaseTag": "dungeonrpcharger-v1.0.2",
         "unicode": "📖",
         "description": "Auto charge relic inside free dungeon. 프리던전 성물 자동충전기",
         "tags": [
