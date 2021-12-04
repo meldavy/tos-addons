@@ -30,6 +30,12 @@ DungeonRPCharger.Default = {
 
 -- constants
 DungeonRPCharger.EctoniteClassName = 'misc_Ectonite';
+DungeonRPCharger.BuffIDs = {
+    [40049] = 1,    -- 해방
+    [40065] = 1,    -- 충전 제한
+    [40067] = 1,    -- 충전 제한
+    [40070] = 1,    -- 충전 제한
+}
 DungeonRPCharger.RelicReleaseBuffID = 40049;
 DungeonRPCharger.MinimumThreshold = 150;
 DungeonRPCharger.MapIDList = {
@@ -65,7 +71,7 @@ function DUNGEONRPCHARGER_ON_BUFF_ADD(frame, msg, argStr, classID)
 end
 
 function DUNGEONRPCHARGER_ON_BUFF_REMOVE(frame, msg, argStr, classID)
-    if (classID == DungeonRPCharger.RelicReleaseBuffID) then
+    if (DungeonRPCharger.BuffIDs[classID] == 1) then
         frame:StopUpdateScript("DUNGEONRPCHARGER_ON_TICK")
         -- try recharge relic
         DungeonRPCharger:RechargeRelic();
@@ -117,6 +123,12 @@ function DungeonRPCharger.RechargeRelic(self)
 end
 
 function DungeonRPCharger.IsRechargeableMap(self, id)
+    -- check if map is city
+    local mapCls = GetClassByType('Map', id)
+    if TryGetProp(mapCls, 'MapType', 'None') == 'City' then
+        return 1
+    end
+    -- check if map is other rechargable map
     if (DungeonRPCharger:IsItemInArray(id, DungeonRPCharger.MapIDList) > -1) then
         return 1
     end
