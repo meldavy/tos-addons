@@ -273,5 +273,17 @@
         "tags": [
             "ui"
         ]
+    },
+    {
+        "name": "Payakaroon",
+        "file": "payakaroon",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "payakaroon-v1.0.0",
+        "unicode": "📖",
+        "description": "Gauge for payakaroon stacks. 삭풍 스택 게이지 애드온",
+        "tags": [
+            "ui"
+        ]
     }
 ]
