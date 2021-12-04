@@ -261,5 +261,17 @@
         "tags": [
             "ui"
         ]
+    },
+    {
+        "name": "HwarangTracker",
+        "file": "hwarangtracker",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "hwarangtracker-v1.0.0",
+        "unicode": "📖",
+        "description": "Tells you how much Hwarang stacks you can safely consume. 임전무퇴 쿨타임을 고려해서 흑각/백각궁을 얼만큼 사용해도 되는지 알려주는 애드온.",
+        "tags": [
+            "ui"
+        ]
     }
 ]
