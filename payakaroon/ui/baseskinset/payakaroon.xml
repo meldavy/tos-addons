@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by imc (imc) -->
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by MintPC (Mi) -->
+<skinset name="Base">
+    <skinlist category="Skin">
+        <skin name="payakaroon_gauge_green" texture="\skin\payakaroon.tga">
+            <img name="bgleft" imgrect="9 5 1 21"/>
+            <img name="bgmiddle" imgrect="10 5 185 21"/>
+            <img name="bgright" imgrect="195 5 1 21"/>
+            <img name="barleft" imgrect="9 30 1 21"/>
+            <img name="barmiddle" imgrect="10 30 185 21"/>
+            <img name="barright" imgrect="9 30 1 21"/>
+        </skin>
+        <skin name="payakaroon_gauge_orange" texture="\skin\payakaroon.tga">
+            <img name="bgleft" imgrect="9 5 1 21"/>
+            <img name="bgmiddle" imgrect="10 5 185 21"/>
+            <img name="bgright" imgrect="195 5 1 21"/>
+            <img name="barleft" imgrect="9 52 1 21"/>
+            <img name="barmiddle" imgrect="10 52 185 21"/>
+            <img name="barright" imgrect="9 52 1 21"/>
+        </skin>
+        <skin name="payakaroon_gauge_yellow" texture="\skin\payakaroon.tga">
+            <img name="bgleft" imgrect="9 5 1 21"/>
+            <img name="bgmiddle" imgrect="10 5 185 21"/>
+            <img name="bgright" imgrect="195 5 1 21"/>
+            <img name="barleft" imgrect="9 75 1 21"/>
+            <img name="barmiddle" imgrect="10 75 185 21"/>
+            <img name="barright" imgrect="9 75 1 21"/>
+        </skin>
+    </skinlist>
+</skinset>
