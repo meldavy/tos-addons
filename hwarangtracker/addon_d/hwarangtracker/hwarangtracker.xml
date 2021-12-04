@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uiframe name="hwarangtracker" x="0" y="0" width="0" height="0">
+    <draw drawtitlebar="false"/>
+    <frame fasthide="true" layout_gravity="left top"/>
+    <option visible="false" alwaysVisible="false" closebutton="false" hideable="false" moveable="true"/>
+    <input hittestframe="true"/>
+    <layer layerlevel="10"/>
+    <controls>
+    </controls>
+</uiframe>
