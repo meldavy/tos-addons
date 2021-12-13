@@ -285,5 +285,17 @@
         "tags": [
             "ui"
         ]
+    },
+    {
+        "name": "QuickJobChange",
+        "file": "quickjobchange",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "quickjobchange-v1.0.0",
+        "unicode": "📖",
+        "description": "Auto unequip items and pet when changing class. 클변 할때 자동으로 펫과 장비 해제 해줘요",
+        "tags": [
+            "ui"
+        ]
     }
 ]
