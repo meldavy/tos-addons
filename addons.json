@@ -297,5 +297,17 @@
         "tags": [
             "ui"
         ]
+    },
+    {
+        "name": "QuickCardEnhance",
+        "file": "quickcardenhance",
+        "extension": "ipf",
+        "fileVersion": "v1.0.0",
+        "releaseTag": "quickcardenhance-v1.0.0",
+        "unicode": "📖",
+        "description": "Quickly level up basic cards to level 10 by shift+rmb. 쉬프트+우클릭으로 잡카드 10성강화 빠르게 하세요",
+        "tags": [
+            "ui"
+        ]
     }
 ]
