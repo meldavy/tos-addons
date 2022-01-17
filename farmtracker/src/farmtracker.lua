@@ -10,14 +10,15 @@ _G['ADDONS'][author][addonName] = _G['ADDONS'][author][addonName] or {}
 -- get a pointer to the area
 local FarmTracker = _G['ADDONS'][author][addonName]
 local acutil = require('acutil')
+local base = {}
 
 FarmTracker.SettingsFileLoc = string.format('../addons/%s/settings.json', addonName)
 
 FarmTracker.Settings = {
     EnabledMaps = {},
     Position = {
-        X = 500,
-        Y = 500
+        X = 400,
+        Y = 400
     }
 };
 
@@ -48,7 +49,9 @@ function FARMTRACKER_ON_INIT(addon, frame)
     end
     FARMTRACKER_SAVE_SETTINGS();
 
-    acutil.setupHook(FARMTRACKER_SEQUENTIAL_PICKITEMON_MSG, 'SEQUENTIAL_PICKITEMON_MSG');
+    FarmTracker.SetupHook(FARMTRACKER_SEQUENTIAL_PICKITEMON_MSG, 'SEQUENTIAL_PICKITEMON_MSG')
+    FarmTracker.SetupHook(FARMTRACKER_SEQUENTIALPICKITEM2_MSG, 'SEQUENTIALPICKITEM2_MSG')
+
     addon:RegisterMsg('GAME_START', 'FARMTRACKER_GAME_START');
 
     FARMTRACKER_INIT_FRAME(frame);
@@ -75,9 +78,11 @@ function FARMTRACKER_INIT_FRAME(frame)
     end
     frame:EnableMove(1);
     frame:SetEventScript(ui.LBUTTONUP, "FARMTRACKER_END_DRAG");
+    frame:Resize(FarmTracker.Default.Width, FarmTracker.Default.Height);
+
+    -- set default position of frame
     frame:Move(FarmTracker.Settings.Position.X, FarmTracker.Settings.Position.Y);
     frame:SetOffset(FarmTracker.Settings.Position.X, FarmTracker.Settings.Position.Y);
-    frame:Resize(FarmTracker.Default.Width, FarmTracker.Default.Height);
 
     local titleText = frame:CreateOrGetControl("richtext", "title", 10, 10, 0, 0);
     titleText:SetFontName("white_16_ol");
@@ -154,12 +159,44 @@ function FARMTRACKER_TOGGLE_FRAME()
     FARMTRACKER_SAVE_SETTINGS()
 end
 
+function BOUNTYHUD_BOUNTYHUNT_MON_MARK(monhandle, x, y, z, isAlive, MonRank)
+    BountyHud.ProcessBountyMonMark(monhandle, x, y, z, isAlive, MonRank)
+end
+
+function FARMTRACKER_SEQUENTIALPICKITEM2_MSG(frame, msg, guid, count, class)
+    FarmTracker.SequentialPickItem2Msg(frame, msg, guid, count, class)
+end
+
+function FarmTracker.SequentialPickItem2Msg(frame, msg, guid, count, class)
+    local trackerFrame = FarmTracker.frame
+    if (trackerFrame ~= nil and trackerFrame:IsVisible() == 1) then
+        if msg == 'INV_ITEM_IN' then
+            local invitem = session.GetInvItemByGuid(guid);
+            local itemID = invitem.type
+            if (trackedItems[itemID] ~= nil) then
+                trackedItems[itemID] = trackedItems[itemID] + count
+            else
+                trackedItems[itemID] = count
+            end
+        end
+    end
+    FarmTracker:DrawSlots()
+    base["SEQUENTIALPICKITEM2_MSG"](frame, msg, guid, count, class)
+end
+
+
+
+
 function FARMTRACKER_SEQUENTIAL_PICKITEMON_MSG(frame, msg, arg1, type, class)
+    FarmTracker.SequentialPickItemMsg(frame, msg, arg1, type, class)
+end
+
+function FarmTracker.SequentialPickItemMsg(frame, msg, arg1, type, class)
     local trackerFrame = FarmTracker.frame
     if (trackerFrame ~= nil and trackerFrame:IsVisible() == 1) then
         if msg == 'INV_ITEM_ADD' then
             if arg1 == 'UNEQUIP' then
-                SEQUENTIAL_PICKITEMON_MSG_OLD(frame, msg, arg1, type, class)
+                base["SEQUENTIAL_PICKITEMON_MSG"](frame, msg, arg1, type, class)
                 return
             end
         elseif msg == 'INV_ITEM_IN' then
@@ -175,7 +212,7 @@ function FARMTRACKER_SEQUENTIAL_PICKITEMON_MSG(frame, msg, arg1, type, class)
         end
     end
     FarmTracker:DrawSlots()
-    SEQUENTIAL_PICKITEMON_MSG_OLD(frame, msg, arg1, type, class)
+    base["SEQUENTIAL_PICKITEMON_MSG"](frame, msg, arg1, type, class)
 end
 
 function FarmTracker.ExpandRow(self)
@@ -259,4 +296,14 @@ end
 
 function FarmTracker.FormatNumber(self, i)
     return tostring(i):reverse():gsub("%d%d%d", "%1,"):reverse():gsub("^,", "")
+end
+
+function FarmTracker.SetupHook(func, baseFuncName)
+    local addonUpper = string.upper(addonName)
+    local replacementName = addonUpper .. "_BASE_" .. baseFuncName
+    if (_G[replacementName] == nil) then
+        _G[replacementName] = _G[baseFuncName]
+        _G[baseFuncName] = func
+    end
+    base[baseFuncName] = _G[replacementName]
 end
