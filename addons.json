@@ -106,31 +106,6 @@
         ]
     },
     {
-        "name": "MiniAcquisition",
-        "file": "miniacquisition",
-        "extension": "ipf",
-        "fileVersion": "v1.0.4",
-        "releaseTag": "miniacquisition-v1.0.4",
-        "unicode": "📖",
-        "description": "Makes the item acquisition popup smaller and less obtrusive. 아이템 획득 팝업 조그만하게 만들어줌",
-        "tags": [
-            "ui"
-        ]
-    },
-    {
-        "name": "EasyCardEquip",
-        "file": "easycardequip",
-        "extension": "ipf",
-        "fileVersion": "v1.0.1",
-        "releaseTag": "easycardequip-v1.0.1",
-        "unicode": "📖",
-        "description": "Equip and Unequip same card type with one click. 같은종류카드 클릭 한번에 전부 탈착/장착",
-        "tags": [
-            "ui",
-            "card"
-        ]
-    },
-    {
         "name": "AutoSandraDetail",
         "file": "autosandradetail",
         "extension": "ipf",
