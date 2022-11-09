@@ -29,7 +29,7 @@ DungeonRPCharger.Default = {
 };
 
 -- constants
-DungeonRPCharger.EctoniteClassName = 'misc_Ectonite';
+DungeonRPCharger.EctoniteClassName = 'misc_Ectonite_Care';
 DungeonRPCharger.BuffIDs = {
     [40049] = 1,    -- 해방
     [40065] = 1,    -- 충전 제한
